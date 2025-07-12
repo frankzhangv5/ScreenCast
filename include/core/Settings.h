@@ -64,6 +64,7 @@ public:
 
 private:
     Settings();
+    static void updateToolPathsEnv();
     static QString systemDefaultLang();
     static QString defaultLogDir();
     static QString defaultScreenshotDir();

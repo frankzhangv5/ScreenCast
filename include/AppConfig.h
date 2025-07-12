@@ -34,9 +34,9 @@ namespace AppConfig
     const QString ACTIVE_COLOR = "#C8E6C9";         // Active (clicked) color
     const QString FOCUS_COLOR = "#C8E6C9";          // Focus color for input fields
 
-    const QString HOME_PAGE_URL = "https://frankzhangv5/ScreenCast/ScreenCast";
+    const QString HOME_PAGE_URL = "https://frankzhangv5/ScreenCast";
     const QString HELP_URL = HOME_PAGE_URL + "/blob/master/docs/quickstart.md";
     const QString UPDATE_URL = HOME_PAGE_URL + "/raw/master/pack/update.json";
-    const QString DRIVER_DOWNLOAD_URL = "https://frankzhangv5/ScreenCast/DeviceDriver";
+    const QString DRIVER_DOWNLOAD_URL = HOME_PAGE_URL + "/DeviceDriver";
     const QString DONATION_URL = HOME_PAGE_URL + "/blob/master/docs/donation.md";
 } // namespace AppConfig

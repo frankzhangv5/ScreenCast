@@ -398,8 +398,8 @@ QGroupBox* SettingsWindow::createDriverSettingsGroup()
     proxyLayout->addLayout(hdcLayout);
 
     // Check driver installation status
-    bool adbInstalled = !QStandardPaths::findExecutable("adb").isEmpty();
-    bool hdcInstalled = !QStandardPaths::findExecutable("hdc").isEmpty();
+    bool adbInstalled = Settings::isAdbInstalled();
+    bool hdcInstalled = Settings::isHdcInstalled();
 
     if (!adbInstalled)
     {

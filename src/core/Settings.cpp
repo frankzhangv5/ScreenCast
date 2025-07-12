@@ -10,8 +10,52 @@
 #include <QSettings>
 #include <QStandardPaths>
 
+void Settings::updateToolPathsEnv()
+{
+#ifdef Q_OS_MAC
+    QStringList adbPaths = {
+        "/usr/local/bin/adb",
+        "/opt/homebrew/bin/adb",
+        "/opt/local/bin/adb",
+        QDir::homePath() + "/Library/Android/sdk/platform-tools/adb",
+        QDir::homePath() + "/Android/Sdk/platform-tools/adb"
+    };
+    QStringList hdcPaths = {
+        "/usr/local/bin/hdc",
+        "/opt/homebrew/bin/hdc",
+        "/opt/local/bin/hdc",
+        QDir::homePath() + "/Library/DevEcoStudio/Sdk/toolchains/hdc"
+    };
+    QStringList dirsToAdd;
+    for (const QString& path : adbPaths) {
+        if (QFile::exists(path)) {
+            dirsToAdd << QFileInfo(path).absolutePath();
+        }
+    }
+    for (const QString& path : hdcPaths) {
+        if (QFile::exists(path)) {
+            dirsToAdd << QFileInfo(path).absolutePath();
+        }
+    }
+    dirsToAdd.removeDuplicates();
+    QString currentPath = qgetenv("PATH");
+    QStringList pathList = currentPath.split(QLatin1Char(':'), Qt::SkipEmptyParts);
+    for (const QString& dir : dirsToAdd) {
+        if (!pathList.contains(dir)) {
+            pathList.prepend(dir);
+        }
+    }
+    QString newPath = pathList.join(QLatin1Char(':'));
+    qputenv("PATH", newPath.toUtf8());
+#else
+    return;
+#endif
+}
+
 Settings::Settings() : QObject(nullptr), m_settings("settings.ini", QSettings::IniFormat)
 {
+    updateToolPathsEnv();
+
     // Log
     if (!m_settings.contains(KEY_LOG_TO_FILE))
         m_settings.setValue(KEY_LOG_TO_FILE, false);
@@ -179,23 +223,7 @@ bool Settings::isAdbInstalled()
     if (!adbPath.isEmpty()) {
         return true;
     }
-    
-    // Check common macOS installation paths
-    QStringList possiblePaths = {
-        "/usr/local/bin/adb",
-        "/opt/homebrew/bin/adb",
-        "/opt/local/bin/adb",
-        "/Applications/Android Studio.app/Contents/plugins/android/lib/templates/gradle/wrapper/gradle/wrapper/adb",
-        QDir::homePath() + "/Library/Android/sdk/platform-tools/adb",
-        QDir::homePath() + "/Android/Sdk/platform-tools/adb"
-    };
-    
-    for (const QString& path : possiblePaths) {
-        if (QFile::exists(path)) {
-            return true;
-        }
-    }
-    
+
     return false;
 }
 
@@ -206,20 +234,6 @@ bool Settings::isHdcInstalled()
     if (!hdcPath.isEmpty()) {
         return true;
     }
-    
-    // Check common macOS installation paths for HDC
-    QStringList possiblePaths = {
-        "/usr/local/bin/hdc",
-        "/opt/homebrew/bin/hdc",
-        "/opt/local/bin/hdc",
-        QDir::homePath() + "/Library/DevEcoStudio/Sdk/toolchains/hdc"
-    };
-    
-    for (const QString& path : possiblePaths) {
-        if (QFile::exists(path)) {
-            return true;
-        }
-    }
-    
+
     return false;
 }
