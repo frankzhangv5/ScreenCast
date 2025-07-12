@@ -9,6 +9,8 @@ on:
 jobs:
   build-windows:
     runs-on: windows-latest
+    permissions:
+      contents: write
     steps:
     - uses: actions/checkout@v4
       with:
@@ -75,6 +77,8 @@ jobs:
 
   build-linux:
     runs-on: ubuntu-22.04
+    permissions:
+      contents: write
     steps:
     - uses: actions/checkout@v4
       with:
@@ -144,6 +148,8 @@ jobs:
 
   build-macos-arm64:
     runs-on: macos-latest
+    permissions:
+      contents: write
     steps:
     - uses: actions/checkout@v4
       with:
@@ -201,6 +207,8 @@ jobs:
 
   build-macos-x86_64:
     runs-on: macos-13
+    permissions:
+      contents: write
     steps:
     - uses: actions/checkout@v4
       with:
@@ -259,6 +267,8 @@ jobs:
   create-release:
     needs: [build-windows, build-linux, build-macos-arm64, build-macos-x86_64]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     if: github.event_name == 'release'
     steps:
     - name: Verify Release Assets
