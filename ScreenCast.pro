@@ -55,10 +55,6 @@ win32 {
             -lswscale \
             -lavutil
 
-    # Fix MinGW linking issues
-    CONFIG += static_runtime
-    QMAKE_LFLAGS += -static-libgcc -static-libstdc++
-    
     # Add missing runtime library
     LIBS += -lmsvcrt
 
