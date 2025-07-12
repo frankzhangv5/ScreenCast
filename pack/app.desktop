@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=ScreenCast
+GenericName=Screen Recorder
+Exec=ScreenCast
+Icon=ScreenCast
+Categories=Utility;
+Comment=Screen recording and casting tool
+Keywords=screen;recording;video;capture;
+Terminal=false
+StartupWMClass=ScreenCast
+X-AppImage-Version=2b7155d
+X-AppImage-Integrate=false
+X-AppImage-UpdateInformation=false

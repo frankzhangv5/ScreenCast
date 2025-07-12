@@ -1,0 +1,11 @@
+{
+  "windows": {
+    "version": "1.0.0"
+  },
+  "linux": {
+    "version": "1.0.0"
+  },
+  "macos": {
+    "version": "1.0.0"
+  }
+}

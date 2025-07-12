@@ -1,0 +1,150 @@
+name: Build and Package
+
+on:
+  pull_request:
+    branches: [ main ]
+  release:
+    types: [ published ]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Qt
+      uses: jurplel/install-qt-action@v4
+      with:
+        version: '6.9.1'
+        arch: 'x64'
+        modules: 'qtcharts qtnetworkauth qtwebengine qtwebview qtlocation qtpositioning qtsensors qtserialport qtserialbus qtscript qtscxml qtspeech qt3d qtquick3d qtquick3dphysics qtquicktimeline qtremoteobjects qtwebchannel qtwebsockets qtwebview qtlocation qtpositioning qtsensors qtserialport qtserialbus qtscript qtscxml qtspeech qt3d qtquick3d qtquick3dphysics qtquicktimeline qtremoteobjects qtwebchannel qtwebsockets'
+        install-deps: true
+    
+    - name: Install Inno Setup
+      run: |
+        # Download and install Inno Setup 6
+        $url = "https://files.jrsoftware.org/is/6/innosetup-6.2.2.exe"
+        $output = "$env:TEMP\innosetup-6.2.2.exe"
+        Write-Host "Downloading Inno Setup..."
+        Invoke-WebRequest -Uri $url -OutFile $output
+        
+        Write-Host "Installing Inno Setup..."
+        Start-Process -FilePath $output -ArgumentList "/VERYSILENT", "/NORESTART" -Wait
+        
+        # Verify installation
+        $isccPath = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+        if (Test-Path $isccPath) {
+            Write-Host "Inno Setup installed successfully at: $isccPath"
+        } else {
+            Write-Error "Inno Setup installation failed!"
+            exit 1
+        }
+    
+    - name: Build Windows
+      run: |
+        cd pack
+        powershell -ExecutionPolicy Bypass -File windows.ps1
+    
+    - name: Upload Windows Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-package
+        path: pack/installer/*-Setup.exe
+        retention-days: 30
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Qt
+      uses: jurplel/install-qt-action@v4
+      with:
+        version: '6.9.1'
+        arch: 'x64'
+        modules: 'qtcharts qtnetworkauth qtwebengine qtwebview qtlocation qtpositioning qtsensors qtserialport qtserialbus qtscript qtscxml qtspeech qt3d qtquick3d qtquick3dphysics qtquicktimeline qtremoteobjects qtwebchannel qtwebsockets qtwebview qtlocation qtpositioning qtsensors qtserialport qtserialbus qtscript qtscxml qtspeech qt3d qtquick3d qtquick3dphysics qtquicktimeline qtremoteobjects qtwebchannel qtwebsockets'
+        install-deps: true
+    
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libavcodec-dev libavformat-dev libavutil-dev libswscale-dev imagemagick
+    
+    - name: Build Linux
+      run: |
+        cd pack
+        chmod +x linux.sh
+        ./linux.sh
+    
+    - name: Upload Linux Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: linux-package
+        path: |
+          pack/release/*.AppImage
+          pack/deb/*.deb
+        retention-days: 30
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Qt
+      uses: jurplel/install-qt-action@v4
+      with:
+        version: '6.9.1'
+        arch: 'x64'
+        modules: 'qtcharts qtnetworkauth qtwebengine qtwebview qtlocation qtpositioning qtsensors qtserialport qtserialbus qtscript qtscxml qtspeech qt3d qtquick3d qtquick3dphysics qtquicktimeline qtremoteobjects qtwebchannel qtwebsockets qtwebview qtlocation qtpositioning qtsensors qtserialport qtserialbus qtscript qtscxml qtspeech qt3d qtquick3d qtquick3dphysics qtquicktimeline qtremoteobjects qtwebchannel qtwebsockets'
+        install-deps: true
+    
+    - name: Install Dependencies
+      run: |
+        brew install ffmpeg
+    
+    - name: Build macOS
+      run: |
+        cd pack
+        chmod +x macos.sh
+        ./macos.sh
+    
+    - name: Upload macOS Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: macos-package
+        path: pack/release/*.dmg
+        retention-days: 30
+
+  create-release:
+    needs: [build-windows, build-linux, build-macos]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release'
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+    
+    - name: Create Release Assets
+      run: |
+        mkdir -p release-assets
+        
+        # Copy Windows artifacts
+        cp artifacts/windows-package/*.exe release-assets/ 2>/dev/null || true
+        
+        # Copy Linux artifacts
+        cp artifacts/linux-package/*.AppImage release-assets/ 2>/dev/null || true
+        cp artifacts/linux-package/*.deb release-assets/ 2>/dev/null || true
+        
+        # Copy macOS artifacts
+        cp artifacts/macos-package/*.dmg release-assets/ 2>/dev/null || true
+        
+        echo "Release assets prepared:"
+        ls -la release-assets/
+    
+    - name: Upload Release Assets
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-assets
+        path: release-assets/*
+        retention-days: 90

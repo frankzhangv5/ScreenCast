@@ -1,0 +1,38 @@
+<RCC version="1.0">
+  <qresource prefix="/icons">
+    <file alias="alipay">res/icons/alipay.png</file>
+    <file alias="android">res/icons/android.svg</file>
+    <file alias="logo">res/icons/logo.svg</file>
+    <file alias="ohos">res/icons/ohos.svg</file>
+    <file alias="play">res/icons/play.svg</file>
+    <file alias="splash">res/icons/splash.svg</file>
+    <file alias="tray">res/icons/tray.png</file>
+    <file alias="wechatpay">res/icons/wechatpay.png</file>
+  </qresource>
+  <qresource prefix="/i18n">
+    <file alias="de_DE">res/i18n/de_DE.qm</file>
+    <file alias="en_GB">res/i18n/en_GB.qm</file>
+    <file alias="en_US">res/i18n/en_US.qm</file>
+    <file alias="fr_FR">res/i18n/fr_FR.qm</file>
+    <file alias="hi_IN">res/i18n/hi_IN.qm</file>
+    <file alias="ja_JP">res/i18n/ja_JP.qm</file>
+    <file alias="ko_KR">res/i18n/ko_KR.qm</file>
+    <file alias="ru_RU">res/i18n/ru_RU.qm</file>
+    <file alias="th_TH">res/i18n/th_TH.qm</file>
+    <file alias="vi_VN">res/i18n/vi_VN.qm</file>
+    <file alias="zh_CN">res/i18n/zh_CN.qm</file>
+    <file alias="zh_HK">res/i18n/zh_HK.qm</file>
+    <file alias="zh_TW">res/i18n/zh_TW.qm</file>
+  </qresource>
+  <qresource prefix="/images">
+    <file alias="splash">res/images/splash.png</file>
+  </qresource>
+  <qresource prefix="/server">
+    <file alias="android">res/server/android</file>
+    <file alias="ohos">res/server/ohos</file>
+  </qresource>
+  <qresource prefix="/app_icons">
+    <file alias="macos_icon">res/app_icons/macos_icon.icns</file>
+    <file alias="windows_icon">res/app_icons/windows_icon.ico</file>
+  </qresource>
+</RCC>

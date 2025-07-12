@@ -1,0 +1,199 @@
+# ======================= #
+#  Qt/C++通用忽略规则 #
+# ======================= #
+
+# 构建系统生成的目录
+build/
+/bin/
+obj/
+__pycache__/
+
+# Qt Creator生成的构建目录
+*.user
+*.autosave
+
+# 编译结果
+*.o
+*.obj
+*.exe
+# *.dll
+# *.so
+# *.a
+# *.lib
+*.dylib
+*.app
+
+# 预编译头文件
+*.pch
+
+# Qt元对象编译器输出
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+
+# Qt临时文件
+Makefile*
+*.pro.user*
+*.qmake.stash
+*.qmlc
+*.jsc
+
+# Qt生成的文件
+*.log
+*.core
+*.core.*
+
+# 测试相关输出
+*.tlog
+*.lastbuildstate
+
+# CMake生成文件
+CMakeCache.txt
+CMakeFiles
+cmake_install.cmake
+install_manifest.txt
+CMakeLists.txt.user
+*.cmake
+
+# ======================= #
+# 跨平台特定规则 #
+# ======================= #
+
+## Windows平台特定忽略 ##
+*.pdb
+*.idb
+*.ilk
+*.exp
+*.res
+*.manifest
+*.dmp
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+*.sdf
+*.ipch
+*.aps
+*.pgc
+*.pgd
+*.sln
+*.vcxproj*
+*.vcproj*
+*.vcpfilters
+*.opensdf
+*.suo
+*.sconsign.dblite
+Thumbs.db
+
+## macOS平台特定忽略 ##
+.DS_Store
+._*
+*.dSYM
+*.dSYM.zip
+*.app
+*.dmg
+*.ipa
+*.xcuserstate
+Pods/
+*.xcuserstate
+
+## Linux平台特定忽略 ##
+*~
+
+# ======================= #
+# IDE和工具特定规则 #
+# ======================= #
+
+## Qt Creator
+*.autosave
+~*
+
+## Visual Studio & VSCode
+.vs/
+.vscode/
+*.VC.db
+*.VC.VC.opendb
+*.sqlite3
+*.code-workspace
+
+## CLion
+.idea/
+*.iml
+.idea_modules/
+.cache/
+
+## Xcode
+xcuserdata/
+*.xccheckout
+*.xcscmblueprint
+*.xcodeproj/
+
+## Eclipse
+.settings/
+.project
+.cproject
+*.launch
+
+## Vim
+.*.swp
+.*.swo
+Session.vim
+
+## Sublime Text
+*.sublime-*
+*.sublime-project
+*.sublime-workspace
+
+# ======================= #
+# 依赖和资源文件忽略 #
+# ======================= #
+
+# 第三方依赖
+extern/
+vendor/
+dependencies/
+requirements.txt
+Pipfile
+Pipfile.lock
+
+# 资源文件和缓存
+*.pyc
+*.cache
+*.egg-info
+*.pyc
+*.pyo
+*.mo
+__pycache__/
+
+# ======================= #
+# 文档和临时文件 #
+# ======================= #
+
+# 文档相关
+docs/_build/
+*.chm
+*.log
+*.out
+*.aux
+*.toc
+
+# 本地临时文件
+*.bak
+*.backup
+*.orig
+*~
+.~*
+*.tmp
+
+# 打包和发布文件
+*.deb
+*.rpm
+*.msi
+*.dmg
+*.tar
+*.tgz
+*.zip
+*.gz
+*.7z
+*.bz2
