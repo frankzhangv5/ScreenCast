@@ -13,14 +13,13 @@ jobs:
     - uses: actions/checkout@v4
     
     - name: Setup Qt
-      uses: jurplel/install-qt-action@v4
+      uses: jurplel/install-qt-action@v3
       with:
+        aqtversion: '==3.1.*'
         version: '6.9.1'
+        host: 'windows'
         target: 'desktop'
-        arch: 'win64_msvc2022_64'
-        use-official: true
-        email: ${{ secrets.QT_EMAIL }}
-        pw: ${{ secrets.QT_PW }}
+        arch: 'win64_mingw'
     
     - name: Install Inno Setup
       run: |
@@ -60,14 +59,13 @@ jobs:
     - uses: actions/checkout@v4
     
     - name: Setup Qt
-      uses: jurplel/install-qt-action@v4
+      uses: jurplel/install-qt-action@v3
       with:
+        aqtversion: '==3.1.*'
         version: '6.9.1'
+        host: 'linux'
         target: 'desktop'
-        arch: 'x86_64'
-        use-official: true
-        email: ${{ secrets.QT_EMAIL }}
-        pw: ${{ secrets.QT_PW }}
+        arch: 'linux_gcc_64'
     
     - name: Install Dependencies
       run: |
@@ -95,18 +93,17 @@ jobs:
     - uses: actions/checkout@v4
     
     - name: Setup Qt
-      uses: jurplel/install-qt-action@v4
+      uses: jurplel/install-qt-action@v3
       with:
+        aqtversion: '==3.1.*'
         version: '6.9.1'
+        host: 'mac'
         target: 'desktop'
-        arch: 'x86_64'
-        use-official: true
-        email: ${{ secrets.QT_EMAIL }}
-        pw: ${{ secrets.QT_PW }}
+        arch: 'clang_64'
     
     - name: Install Dependencies
       run: |
-        brew install ffmpeg
+        brew install ffmpeg@7
     
     - name: Build macOS
       run: |
