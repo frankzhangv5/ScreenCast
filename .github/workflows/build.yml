@@ -58,6 +58,21 @@ jobs:
         name: windows-package
         path: pack/installer/*-Setup.exe
         retention-days: 30
+    
+    - name: Upload Windows to Release
+      if: github.event_name == 'release'
+      run: |
+        # Find the installer file
+        $installerFile = Get-ChildItem -Path "pack/installer" -Filter "*-Setup.exe" | Select-Object -First 1
+        if ($installerFile) {
+          Write-Host "Uploading $($installerFile.FullName) to release..."
+          gh release upload ${{ github.event.release.tag_name }} "$($installerFile.FullName)" --clobber
+        } else {
+          Write-Error "No installer file found!"
+          exit 1
+        }
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-linux:
     runs-on: ubuntu-22.04
@@ -98,6 +113,36 @@ jobs:
           pack/release/*.AppImage
           pack/deb/*.deb
         retention-days: 30
+    
+    - name: Upload Linux AppImage to Release
+      if: github.event_name == 'release'
+      run: |
+        # Find the AppImage file
+        appimage_file=$(find pack/release -name "*.AppImage" -type f | head -1)
+        if [ -n "$appimage_file" ]; then
+          echo "Uploading $appimage_file to release..."
+          gh release upload ${{ github.event.release.tag_name }} "$appimage_file" --clobber
+        else
+          echo "No AppImage file found!"
+          exit 1
+        fi
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Upload Linux DEB to Release
+      if: github.event_name == 'release'
+      run: |
+        # Find the DEB file
+        deb_file=$(find pack/deb -name "*.deb" -type f | head -1)
+        if [ -n "$deb_file" ]; then
+          echo "Uploading $deb_file to release..."
+          gh release upload ${{ github.event.release.tag_name }} "$deb_file" --clobber
+        else
+          echo "No DEB file found!"
+          exit 1
+        fi
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-macos-arm64:
     runs-on: macos-latest
@@ -141,6 +186,21 @@ jobs:
         name: macos-arm64-package
         path: pack/release/*.dmg
         retention-days: 30
+    
+    - name: Upload macOS ARM64 to Release
+      if: github.event_name == 'release'
+      run: |
+        # Find the DMG file
+        dmg_file=$(find pack/release -name "*.dmg" -type f | head -1)
+        if [ -n "$dmg_file" ]; then
+          echo "Uploading $dmg_file to release..."
+          gh release upload ${{ github.event.release.tag_name }} "$dmg_file" --clobber
+        else
+          echo "No DMG file found!"
+          exit 1
+        fi
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-macos-x86_64:
     runs-on: macos-13
@@ -184,38 +244,30 @@ jobs:
         name: macos-x86_64-package
         path: pack/release/*.dmg
         retention-days: 30
+    
+    - name: Upload macOS x86_64 to Release
+      if: github.event_name == 'release'
+      run: |
+        # Find the DMG file
+        dmg_file=$(find pack/release -name "*.dmg" -type f | head -1)
+        if [ -n "$dmg_file" ]; then
+          echo "Uploading $dmg_file to release..."
+          gh release upload ${{ github.event.release.tag_name }} "$dmg_file" --clobber
+        else
+          echo "No DMG file found!"
+          exit 1
+        fi
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   create-release:
     needs: [build-windows, build-linux, build-macos-arm64, build-macos-x86_64]
     runs-on: ubuntu-latest
     if: github.event_name == 'release'
     steps:
-    - name: Download all artifacts
-      uses: actions/download-artifact@v4
-      with:
-        path: artifacts
-    
-    - name: Create Release Assets
+    - name: Verify Release Assets
       run: |
-        mkdir -p release-assets
-        
-        # Copy Windows artifacts
-        cp artifacts/windows-package/*.exe release-assets/ 2>/dev/null || true
-        
-        # Copy Linux artifacts
-        cp artifacts/linux-package/*.AppImage release-assets/ 2>/dev/null || true
-        cp artifacts/linux-package/*.deb release-assets/ 2>/dev/null || true
-        
-        # Copy macOS artifacts
-        cp artifacts/macos-arm64-package/*.dmg release-assets/ 2>/dev/null || true
-        cp artifacts/macos-x86_64-package/*.dmg release-assets/ 2>/dev/null || true
-        
-        echo "Release assets prepared:"
-        ls -la release-assets/
-    
-    - name: Upload Release Assets
-      uses: actions/upload-artifact@v4
-      with:
-        name: release-assets
-        path: release-assets/*
-        retention-days: 90
+        echo "All build jobs completed successfully!"
+        echo "Release assets should now be available in the GitHub release."
+        echo "Release tag: ${{ github.event.release.tag_name }}"
+        echo "Release URL: ${{ github.event.release.html_url }}"
