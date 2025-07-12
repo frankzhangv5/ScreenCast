@@ -19,8 +19,8 @@ Settings::Settings() : QObject(nullptr), m_settings("settings.ini", QSettings::I
         m_settings.setValue(KEY_LOG_DIR, defaultLogDir());
 
     // Proxy
-    bool adbInstalled = !QStandardPaths::findExecutable("adb").isEmpty();
-    bool hdcInstalled = !QStandardPaths::findExecutable("hdc").isEmpty();
+    bool adbInstalled = isAdbInstalled();
+    bool hdcInstalled = isHdcInstalled();
 
     if (!m_settings.contains(KEY_PROXY_ADB))
         m_settings.setValue(KEY_PROXY_ADB, adbInstalled);
@@ -157,8 +157,8 @@ void Settings::resetToDefault()
     m_settings.setValue(KEY_LOG_DIR, defaultLogDir());
 
     // Proxy
-    bool adbInstalled = !QStandardPaths::findExecutable("adb").isEmpty();
-    bool hdcInstalled = !QStandardPaths::findExecutable("hdc").isEmpty();
+    bool adbInstalled = isAdbInstalled();
+    bool hdcInstalled = isHdcInstalled();
     m_settings.setValue(KEY_PROXY_ADB, adbInstalled);
     m_settings.setValue(KEY_PROXY_HDC, hdcInstalled);
 
@@ -170,4 +170,56 @@ void Settings::resetToDefault()
     m_settings.setValue(KEY_LANG, systemDefaultLang());
 
     qDebug() << "Settings reset to default values";
+}
+
+bool Settings::isAdbInstalled()
+{
+    // First try standard PATH
+    QString adbPath = QStandardPaths::findExecutable("adb");
+    if (!adbPath.isEmpty()) {
+        return true;
+    }
+    
+    // Check common macOS installation paths
+    QStringList possiblePaths = {
+        "/usr/local/bin/adb",
+        "/opt/homebrew/bin/adb",
+        "/opt/local/bin/adb",
+        "/Applications/Android Studio.app/Contents/plugins/android/lib/templates/gradle/wrapper/gradle/wrapper/adb",
+        QDir::homePath() + "/Library/Android/sdk/platform-tools/adb",
+        QDir::homePath() + "/Android/Sdk/platform-tools/adb"
+    };
+    
+    for (const QString& path : possiblePaths) {
+        if (QFile::exists(path)) {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+bool Settings::isHdcInstalled()
+{
+    // First try standard PATH
+    QString hdcPath = QStandardPaths::findExecutable("hdc");
+    if (!hdcPath.isEmpty()) {
+        return true;
+    }
+    
+    // Check common macOS installation paths for HDC
+    QStringList possiblePaths = {
+        "/usr/local/bin/hdc",
+        "/opt/homebrew/bin/hdc",
+        "/opt/local/bin/hdc",
+        QDir::homePath() + "/Library/DevEcoStudio/Sdk/toolchains/hdc"
+    };
+    
+    for (const QString& path : possiblePaths) {
+        if (QFile::exists(path)) {
+            return true;
+        }
+    }
+    
+    return false;
 }

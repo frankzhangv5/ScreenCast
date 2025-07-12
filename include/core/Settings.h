@@ -58,6 +58,10 @@ public:
     // Get absolute path of settings.ini
     static QString settingsFilePath();
 
+    // Check if tools are installed
+    static bool isAdbInstalled();
+    static bool isHdcInstalled();
+
 private:
     Settings();
     static QString systemDefaultLang();
