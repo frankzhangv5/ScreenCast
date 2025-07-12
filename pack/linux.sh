@@ -12,7 +12,9 @@ APPDIR="$SCRIPT_DIR/AppDir"
 LINUXDEPLOY_TOOL="$SCRIPT_DIR/tools/linuxdeployqt-x86_64.AppImage"
 
 # Get Qt path from environment variable or use default
-if [ -n "$QT_ROOT_DIR" ]; then
+if [ -n "$Qt6_DIR" ]; then
+    QT_HOME="$Qt6_DIR"
+elif [ -n "$QT_ROOT_DIR" ]; then
     QT_HOME="$QT_ROOT_DIR"
 else
     # Fallback for local development

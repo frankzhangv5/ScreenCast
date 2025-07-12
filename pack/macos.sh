@@ -9,7 +9,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BUILD_DIR="$SCRIPT_DIR/../build"
 RELEASE_DIR="$SCRIPT_DIR/release"
 # Get Qt path from environment variable or use default
-if [ -n "$QT_ROOT_DIR" ]; then
+if [ -n "$Qt6_DIR" ]; then
+    QT_HOME="$Qt6_DIR"
+elif [ -n "$QT_ROOT_DIR" ]; then
     QT_HOME="$QT_ROOT_DIR"
 else
     # Fallback for local development

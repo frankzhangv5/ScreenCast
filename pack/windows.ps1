@@ -8,7 +8,9 @@ $release_dir = "$PSScriptRoot/release"
 $installerDir = "$PSScriptRoot/installer"
 $languagesDir = "$PSScriptRoot/Languages"
 # Get Qt path from environment variable or use default
-if ($env:QT_ROOT_DIR) {
+if ($env:Qt6_DIR) {
+    $qt_home = "$env:Qt6_DIR"
+} elseif ($env:QT_ROOT_DIR) {
     $qt_home = "$env:QT_ROOT_DIR"
 } else {
     # Fallback for local development
