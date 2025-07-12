@@ -391,4 +391,4 @@ echo "AppImage: $APPIMAGE_PATH ($(du -h "$APPIMAGE_PATH" | cut -f1))"
 echo "DEB package: $DEB_PATH ($(du -h "$DEB_PATH" | cut -f1))"
 
 # Optionally: automatically open the folder
-xdg-open "$(dirname "$APPIMAGE_PATH")"
+# xdg-open "$(dirname "$APPIMAGE_PATH")"
