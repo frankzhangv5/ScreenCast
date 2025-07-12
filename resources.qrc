@@ -24,9 +24,6 @@
     <file alias="zh_HK">res/i18n/zh_HK.qm</file>
     <file alias="zh_TW">res/i18n/zh_TW.qm</file>
   </qresource>
-  <qresource prefix="/images">
-    <file alias="splash">res/images/splash.png</file>
-  </qresource>
   <qresource prefix="/server">
     <file alias="android">res/server/android</file>
     <file alias="ohos">res/server/ohos</file>

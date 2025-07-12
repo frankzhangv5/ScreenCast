@@ -23,7 +23,7 @@ TrayManager::TrayManager(QObject* parent) : QObject(parent)
     icon = QIcon(":/app_icons/windows_icon");
 #elif defined(Q_OS_MAC)
     // macOS: prefer ICNS format
-    icon = QIcon(":/app_icons/macos_icon");
+    icon = QIcon(":/icons/tray");
 #else
     // Linux and other platforms: use PNG
     icon = QIcon(":/icons/tray");

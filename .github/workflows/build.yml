@@ -22,6 +22,7 @@ jobs:
         host: 'windows'
         target: 'desktop'
         arch: 'win64_mingw'
+        modules: 'qtsvg'
     
     - name: Install Inno Setup
       run: |
@@ -73,6 +74,7 @@ jobs:
         host: 'linux'
         target: 'desktop'
         arch: 'gcc_64'
+        modules: 'qtsvg'
     
     - name: Install Dependencies
       run: |
@@ -112,6 +114,7 @@ jobs:
         host: 'mac'
         target: 'desktop'
         arch: 'clang_64'
+        modules: 'qtsvg'
     
     - name: Install Dependencies
       run: |
@@ -154,6 +157,7 @@ jobs:
         host: 'mac'
         target: 'desktop'
         arch: 'clang_64'
+        modules: 'qtsvg'
     
     - name: Install Dependencies
       run: |
