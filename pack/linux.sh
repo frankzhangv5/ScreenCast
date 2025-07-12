@@ -61,7 +61,7 @@ function safe_remove() {
 }
 
 # Install required packages
-for pkg in libavcodec-dev libavformat-dev libavutil-dev libswscale-dev imagemagick; do
+for pkg in libavcodec-dev libavformat-dev libavutil-dev libswscale-dev imagemagick fuse libfuse2; do
     if ! dpkg -s "$pkg" &> /dev/null; then
         echo "Installing: $pkg"
         sudo apt install -y $pkg
@@ -233,6 +233,7 @@ SO_LIST=(
     "libxcb-util.so.*"
     "libxcb-xfixes.so.*"
     "libxcb-xkb.so.*"
+    "libfuse.so.*"
 )
 
 cd "$APPDIR/usr/lib"
@@ -345,7 +346,7 @@ Package: $APP_NAME
 Version: $VERSION
 Architecture: $ARCH_NAME
 Maintainer: ZhangFeng <frankzhang02010@gmail.com>
-Depends: libc6, libstdc++6, libgomp1
+Depends: libc6, libstdc++6, libgomp1, fuse, libfuse2
 Description: Screen recording and casting tool
  A powerful screen recording and casting application
  built with Qt framework.

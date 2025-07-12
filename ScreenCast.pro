@@ -55,6 +55,13 @@ win32 {
             -lswscale \
             -lavutil
 
+    # Fix MinGW linking issues
+    CONFIG += static_runtime
+    QMAKE_LFLAGS += -static-libgcc -static-libstdc++
+    
+    # Add missing runtime library
+    LIBS += -lmsvcrt
+
     # Automatically copy DLLs to build directory
      QMAKE_POST_LINK += cmd /c if not exist $$quote($$OUT_PWD) md $$quote($$OUT_PWD)
      QMAKE_POST_LINK += xcopy /Y /S $$quote($$FFMPEG_DIR/bin/*.dll) $$quote($$OUT_PWD)\
@@ -72,15 +79,32 @@ unix:!macx {
 }
 
 macx {
-    INCLUDEPATH += /usr/local/include
-    LIBS += -L/usr/local/lib \
-            -lavcodec \
+    # Try to use FFMPEG_DIR environment variable first
+    !isEmpty(FFMPEG_DIR) {
+        INCLUDEPATH += $$FFMPEG_DIR/include
+        LIBS += -L$$FFMPEG_DIR/lib
+    } else {
+        # Fallback to common Homebrew paths
+        exists(/opt/homebrew/opt/ffmpeg@7/include) {
+            INCLUDEPATH += /opt/homebrew/opt/ffmpeg@7/include
+            LIBS += -L/opt/homebrew/opt/ffmpeg@7/lib
+        } else: exists(/usr/local/opt/ffmpeg@7/include) {
+            INCLUDEPATH += /usr/local/opt/ffmpeg@7/include
+            LIBS += -L/usr/local/opt/ffmpeg@7/lib
+        } else {
+            # System default paths
+            INCLUDEPATH += /usr/local/include
+            LIBS += -L/usr/local/lib
+        }
+    }
+    
+    LIBS += -lavcodec \
             -lavformat \
             -lswscale \
             -lavutil
 
     # Disable symlink generation (reduce deployment issues)
-   CONFIG += absolute_library_soname
+    CONFIG += absolute_library_soname
 }
 
 

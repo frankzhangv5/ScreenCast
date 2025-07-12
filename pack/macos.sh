@@ -66,6 +66,33 @@ if ! brew list ffmpeg &>/dev/null; then
     brew install ffmpeg@7
 fi
 
+# Set up FFmpeg environment variables
+if [ -n "$FFMPEG_DIR" ]; then
+    echo "Using FFMPEG_DIR: $FFMPEG_DIR"
+else
+    # Try to find FFmpeg installation
+    if [ -d "/opt/homebrew/opt/ffmpeg@7" ]; then
+        export FFMPEG_DIR="/opt/homebrew/opt/ffmpeg@7"
+    elif [ -d "/usr/local/opt/ffmpeg@7" ]; then
+        export FFMPEG_DIR="/usr/local/opt/ffmpeg@7"
+    else
+        echo "Warning: FFmpeg directory not found, trying to detect automatically..."
+        FFMPEG_DIR=$(brew --prefix ffmpeg@7 2>/dev/null || echo "")
+        if [ -n "$FFMPEG_DIR" ]; then
+            export FFMPEG_DIR="$FFMPEG_DIR"
+        fi
+    fi
+fi
+
+if [ -n "$FFMPEG_DIR" ]; then
+    echo "FFMPEG_DIR set to: $FFMPEG_DIR"
+    export PKG_CONFIG_PATH="$FFMPEG_DIR/lib/pkgconfig:$PKG_CONFIG_PATH"
+    export CPPFLAGS="-I$FFMPEG_DIR/include $CPPFLAGS"
+    export LDFLAGS="-L$FFMPEG_DIR/lib $LDFLAGS"
+else
+    echo "Warning: FFMPEG_DIR not set, using system defaults"
+fi
+
 echo "Starting build process..."
 echo "Using Qt home: $QT_HOME"
 echo "Version: $VERSION"
