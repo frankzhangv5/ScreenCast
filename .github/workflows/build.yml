@@ -59,7 +59,7 @@ jobs:
         retention-days: 30
 
   build-linux:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v4
       with:
@@ -97,7 +97,7 @@ jobs:
           pack/deb/*.deb
         retention-days: 30
 
-  build-macos:
+  build-macos-arm64:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v4
@@ -108,7 +108,7 @@ jobs:
       uses: jurplel/install-qt-action@v3
       with:
         aqtversion: '==3.1.*'
-        version: '6.9.1'
+        version: '6.6.2'
         host: 'mac'
         target: 'desktop'
         arch: 'clang_64'
@@ -117,11 +117,11 @@ jobs:
       run: |
         brew install ffmpeg@7
         brew install pkg-config
-        # Set up FFmpeg environment variables
+        # Set up FFmpeg environment variables for Apple Silicon
         echo "FFMPEG_DIR=/opt/homebrew/opt/ffmpeg@7" >> $GITHUB_ENV
         echo "PKG_CONFIG_PATH=/opt/homebrew/opt/ffmpeg@7/lib/pkgconfig:$PKG_CONFIG_PATH" >> $GITHUB_ENV
     
-    - name: Build macOS
+    - name: Build macOS ARM64
       env:
         Qt6_DIR: ${{ env.Qt6_DIR }}
         QT_ROOT_DIR: ${{ env.QT_ROOT_DIR }}
@@ -132,15 +132,57 @@ jobs:
         chmod +x macos.sh
         ./macos.sh
     
-    - name: Upload macOS Artifacts
+    - name: Upload macOS ARM64 Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: macos-package
+        name: macos-arm64-package
+        path: pack/release/*.dmg
+        retention-days: 30
+
+  build-macos-x86_64:
+    runs-on: macos-12
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+    
+    - name: Setup Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        aqtversion: '==3.1.*'
+        version: '6.6.2'
+        host: 'mac'
+        target: 'desktop'
+        arch: 'clang_64'
+    
+    - name: Install Dependencies
+      run: |
+        brew install ffmpeg@7
+        brew install pkg-config
+        # Set up FFmpeg environment variables for Intel Mac
+        echo "FFMPEG_DIR=/usr/local/opt/ffmpeg@7" >> $GITHUB_ENV
+        echo "PKG_CONFIG_PATH=/usr/local/opt/ffmpeg@7/lib/pkgconfig:$PKG_CONFIG_PATH" >> $GITHUB_ENV
+    
+    - name: Build macOS x86_64
+      env:
+        Qt6_DIR: ${{ env.Qt6_DIR }}
+        QT_ROOT_DIR: ${{ env.QT_ROOT_DIR }}
+        FFMPEG_DIR: ${{ env.FFMPEG_DIR }}
+        PKG_CONFIG_PATH: ${{ env.PKG_CONFIG_PATH }}
+      run: |
+        cd pack
+        chmod +x macos.sh
+        ./macos.sh
+    
+    - name: Upload macOS x86_64 Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: macos-x86_64-package
         path: pack/release/*.dmg
         retention-days: 30
 
   create-release:
-    needs: [build-windows, build-linux, build-macos]
+    needs: [build-windows, build-linux, build-macos-arm64, build-macos-x86_64]
     runs-on: ubuntu-latest
     if: github.event_name == 'release'
     steps:
@@ -161,7 +203,8 @@ jobs:
         cp artifacts/linux-package/*.deb release-assets/ 2>/dev/null || true
         
         # Copy macOS artifacts
-        cp artifacts/macos-package/*.dmg release-assets/ 2>/dev/null || true
+        cp artifacts/macos-arm64-package/*.dmg release-assets/ 2>/dev/null || true
+        cp artifacts/macos-x86_64-package/*.dmg release-assets/ 2>/dev/null || true
         
         echo "Release assets prepared:"
         ls -la release-assets/
