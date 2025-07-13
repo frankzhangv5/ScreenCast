@@ -55,7 +55,11 @@ void TrayManager::setupTrayMenu()
     fa::QtAwesome* awesome = new fa::QtAwesome(this);
     awesome->initFontAwesome();
     QVariantMap opts;
+#ifdef Q_OS_MAC
+    opts.insert("color", QColor("black"));
+#else
     opts.insert("color", QColor("white"));
+#endif
     QIcon showIcon = awesome->icon(fa::fa_solid, fa::fa_home, opts).pixmap(14, 14);
     QAction* showAction = trayMenu->addAction(showIcon, tr("Show"));
 
@@ -73,14 +77,13 @@ void TrayManager::setupTrayMenu()
                     }
                     QMenu::item {
                         background-color: transparent;
-                        padding: 6px 24px 6px 12px;
+                        padding: 4px 0px;
                         margin: 2px 4px;
-                        border-radius: 4px;
-                        font-size: 10pt;
+                        font: bold 12px;
+                        min-width: 70px;
                     }
                     QMenu::item:selected {
                         background-color: #00804E;
-                        color: #ffffff;
                     }
                     QMenu::item:disabled {
                         color: #6e7681;
@@ -91,7 +94,7 @@ void TrayManager::setupTrayMenu()
                         margin: 4px 8px;
                     }
                     QMenu::icon {
-                        padding-left: 6px;
+                        margin: 0px 4px;
                     }
     )");
 }

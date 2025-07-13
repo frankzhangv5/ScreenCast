@@ -13,35 +13,37 @@
 void Settings::updateToolPathsEnv()
 {
 #ifdef Q_OS_MAC
-    QStringList adbPaths = {
-        "/usr/local/bin/adb",
-        "/opt/homebrew/bin/adb",
-        "/opt/local/bin/adb",
-        QDir::homePath() + "/Library/Android/sdk/platform-tools/adb",
-        QDir::homePath() + "/Android/Sdk/platform-tools/adb"
-    };
-    QStringList hdcPaths = {
-        "/usr/local/bin/hdc",
-        "/opt/homebrew/bin/hdc",
-        "/opt/local/bin/hdc",
-        QDir::homePath() + "/Library/DevEcoStudio/Sdk/toolchains/hdc"
-    };
+    QStringList adbPaths = {"/usr/local/bin/adb",
+                            "/opt/homebrew/bin/adb",
+                            "/opt/local/bin/adb",
+                            QDir::homePath() + "/Library/Android/sdk/platform-tools/adb",
+                            QDir::homePath() + "/Android/Sdk/platform-tools/adb"};
+    QStringList hdcPaths = {"/usr/local/bin/hdc",
+                            "/opt/homebrew/bin/hdc",
+                            "/opt/local/bin/hdc",
+                            QDir::homePath() + "/Library/DevEcoStudio/Sdk/toolchains/hdc"};
     QStringList dirsToAdd;
-    for (const QString& path : adbPaths) {
-        if (QFile::exists(path)) {
+    for (const QString& path : adbPaths)
+    {
+        if (QFile::exists(path))
+        {
             dirsToAdd << QFileInfo(path).absolutePath();
         }
     }
-    for (const QString& path : hdcPaths) {
-        if (QFile::exists(path)) {
+    for (const QString& path : hdcPaths)
+    {
+        if (QFile::exists(path))
+        {
             dirsToAdd << QFileInfo(path).absolutePath();
         }
     }
     dirsToAdd.removeDuplicates();
     QString currentPath = qgetenv("PATH");
     QStringList pathList = currentPath.split(QLatin1Char(':'), Qt::SkipEmptyParts);
-    for (const QString& dir : dirsToAdd) {
-        if (!pathList.contains(dir)) {
+    for (const QString& dir : dirsToAdd)
+    {
+        if (!pathList.contains(dir))
+        {
             pathList.prepend(dir);
         }
     }
@@ -220,7 +222,8 @@ bool Settings::isAdbInstalled()
 {
     // First try standard PATH
     QString adbPath = QStandardPaths::findExecutable("adb");
-    if (!adbPath.isEmpty()) {
+    if (!adbPath.isEmpty())
+    {
         return true;
     }
 
@@ -231,7 +234,8 @@ bool Settings::isHdcInstalled()
 {
     // First try standard PATH
     QString hdcPath = QStandardPaths::findExecutable("hdc");
-    if (!hdcPath.isEmpty()) {
+    if (!hdcPath.isEmpty())
+    {
         return true;
     }
 

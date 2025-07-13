@@ -13,17 +13,19 @@ ScreenCast 是一个完全免费的开源项目，我们致力于为用户提供
 ## 💰 捐赠方式
 
 ### 微信支付
-![微信支付二维码](../res/icons/wechatpay.png)
+<img src="../res/icons/wechatpay.png" width="200px" height="200px" alt="wechatpay" />
 
 ### 支付宝
-![支付宝二维码](../res/icons/alipay.png)
+<img src="../res/icons/alipay.png" width="200px" height="200px" alt="alipay" />
 
 
-#### 银行转账
+### 银行转账
 - **开户行**: 中国银行
 - **账号**: 6217857600030256882
 - **户名**: 张峰
-- **备注**: 捐赠
+
+### 展示
+**需要展示的信息请添加到支付页面的备注里面**
 
 ## 🎁 捐赠等级
 
@@ -71,7 +73,6 @@ ScreenCast 是一个完全免费的开源项目，我们致力于为用户提供
 ## 📞 联系我们
 
 ### 技术支持
-- **技术邮箱**: frankzhang2010@foxmail.com
 - **社区讨论**: [GitHub Discussions](https://github.com/frankzhangv5/ScreenCast/discussions)
 
 ### 商业合作

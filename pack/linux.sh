@@ -39,7 +39,7 @@ VERSION="${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}"
 ARCH=$(uname -m)
 case $ARCH in
     "x86_64")
-        ARCH_NAME="x64"
+        ARCH_NAME="x86_64"
         ;;
     "aarch64"|"arm64")
         ARCH_NAME="arm64"
@@ -265,7 +265,7 @@ find "$APPDIR" -type f -name "*.so*" -exec strip --strip-unneeded {} + || true
 strip --strip-unneeded "$APPDIR/usr/bin/$APP_NAME" || true
 
 # use appimagetool to create AppImage
-APPIMAGE_NAME="ScreenCast-v${VERSION}-${ARCH_NAME}.AppImage"
+APPIMAGE_NAME="ScreenCast-v${VERSION}-linux-${ARCH_NAME}.AppImage"
 "$SCRIPT_DIR/tools/appimagetool-x86_64.AppImage" "$APPDIR" "$RELEASE_DIR/$APPIMAGE_NAME" --runtime-file="$SCRIPT_DIR/tools/runtime-x86_64"
 
 # Find the generated AppImage
@@ -283,7 +283,7 @@ fi
 echo "Creating DEB package..."
 
 DEB_DIR="$SCRIPT_DIR/deb"
-DEB_PKG_NAME="${APP_NAME}_v${VERSION}_${ARCH_NAME}"
+DEB_PKG_NAME="${APP_NAME}_v${VERSION}_linux_${ARCH_NAME}"
 DEB_PKG_DIR="$DEB_DIR/$DEB_PKG_NAME"
 DEB_CONTROL_DIR="$DEB_PKG_DIR/DEBIAN"
 DEB_BIN_DIR="$DEB_PKG_DIR/usr/bin"

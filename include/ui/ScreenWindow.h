@@ -4,6 +4,8 @@
 #include "device/Device.h"
 
 #include <QDateTime>
+#include <QFuture>
+#include <QFutureWatcher>
 #include <QLabel>
 #include <QMenu>
 #include <QToolButton>
@@ -26,12 +28,15 @@ protected:
 private slots:
     void updateVideoFrame(const QImage& frame);
     void onErrorOccurred(const QString& msg);
+    void onScreenshotCompleted();
 
 private:
     QMenu* createNavMenu();
     QMenu* createShortcutMenu();
     void showContextMenu(const QPoint& globalPos);
     QMenu* createContextMenu();
+    void takeScreenshot();
+    QString saveScreenshotToFile(const QByteArray& imageData);
 
     DeviceInfo m_device;
     StreamReader* m_streamReader;
@@ -41,4 +46,5 @@ private:
     qint64 m_lastWheelTime = 0;
     int m_accumulatedWheelDelta = 0;
     QPoint m_lastMousePos;
+    QFutureWatcher<QByteArray>* m_screenshotWatcher;
 };

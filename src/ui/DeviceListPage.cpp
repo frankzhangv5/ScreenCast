@@ -220,7 +220,8 @@ QMenu* DeviceListPage::createContextMenu()
             background-color: transparent;
             padding: 4px 0px;
             margin: 2px 4px;
-            font-size: 12px;
+            font: bold 12px;
+            min-width: 70px;
         }
         QMenu::item:selected {
             background-color: #00804E;
@@ -234,7 +235,7 @@ QMenu* DeviceListPage::createContextMenu()
             margin: 4px 8px;
         }
         QMenu::icon {
-            padding-left: 6px;
+            margin: 0px 4px;
         }
     )");
 

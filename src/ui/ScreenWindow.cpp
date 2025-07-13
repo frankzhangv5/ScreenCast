@@ -5,15 +5,21 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QFutureWatcher>
 #include <QLabel>
 #include <QMenu>
 #include <QStandardPaths>
 #include <QToolButton>
 #include <QVBoxLayout>
+#include <QtConcurrent>
 
 ScreenWindow::ScreenWindow(const DeviceInfo& dev, QWidget* parent) : FramelessWindow(parent, dev.width), m_device(dev)
 {
     getPage()->setFixedSize(dev.width, dev.height);
+
+    // Initialize screenshot watcher
+    m_screenshotWatcher = new QFutureWatcher<QByteArray>(this);
+    connect(m_screenshotWatcher, &QFutureWatcher<QByteArray>::finished, this, &ScreenWindow::onScreenshotCompleted);
 
     // Page content: QLabel for displaying screen recording
     QWidget* page = getPage();
@@ -50,40 +56,7 @@ ScreenWindow::ScreenWindow(const DeviceInfo& dev, QWidget* parent) : FramelessWi
     // Add screenshot button to toolbar for quick access
     QAction* screenshotAction = toolBar->addAction(screenshotIcon, "");
     // Set click event callback
-    connect(screenshotAction, &QAction::triggered, this, [this]() {
-        DeviceProxy* proxy = DeviceManager::instance().proxyForType(m_device.type);
-        if (proxy)
-        {
-            QByteArray imageData;
-            proxy->screenshot(m_device.serial, imageData);
-            if (!imageData.isEmpty())
-            {
-                // Save screenshot to local
-                QString fileExt = m_device.type == DeviceType::OHOS ? "jpg" : "png";
-                QString fileName = QString("Screenshot_%1.%2")
-                                       .arg(QDateTime::currentDateTime().toString("yyyyMMddhhmmss"))
-                                       .arg(fileExt);
-                QString saveDir = Settings::instance().screenshotDir();
-                if (saveDir.isEmpty())
-                {
-                    saveDir = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
-                }
-                QFile file(QDir::cleanPath(QDir::fromNativeSeparators(QDir(saveDir).filePath(fileName))));
-                if (file.open(QIODevice::WriteOnly))
-                {
-                    QFileInfo fileInfo(file);
-                    qDebug() << "Screenshot saved to " << fileInfo.absoluteFilePath();
-                    file.write(imageData);
-                    file.close();
-                    sendSystemNotification(tr("Screenshot"), fileInfo.absoluteFilePath());
-                }
-                else
-                {
-                    qWarning() << "Failed to save screenshot to" << fileName;
-                }
-            }
-        }
-    });
+    connect(screenshotAction, &QAction::triggered, this, &ScreenWindow::takeScreenshot);
 }
 
 void ScreenWindow::showEvent(QShowEvent* event)
@@ -424,40 +397,7 @@ QMenu* ScreenWindow::createContextMenu()
 
     // Screenshot action
     QAction* screenshotAction = contextMenu->addAction(screenshotIcon, tr("Screenshot"));
-    connect(screenshotAction, &QAction::triggered, this, [this]() {
-        DeviceProxy* proxy = DeviceManager::instance().proxyForType(m_device.type);
-        if (proxy)
-        {
-            QByteArray imageData;
-            proxy->screenshot(m_device.serial, imageData);
-            if (!imageData.isEmpty())
-            {
-                // Save screenshot to local
-                QString fileExt = m_device.type == DeviceType::OHOS ? "jpg" : "png";
-                QString fileName = QString("Screenshot_%1.%2")
-                                       .arg(QDateTime::currentDateTime().toString("yyyyMMddhhmmss"))
-                                       .arg(fileExt);
-                QString saveDir = Settings::instance().screenshotDir();
-                if (saveDir.isEmpty())
-                {
-                    saveDir = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
-                }
-                QFile file(QDir::cleanPath(QDir::fromNativeSeparators(QDir(saveDir).filePath(fileName))));
-                if (file.open(QIODevice::WriteOnly))
-                {
-                    QFileInfo fileInfo(file);
-                    qDebug() << "Screenshot saved to " << fileInfo.absoluteFilePath();
-                    file.write(imageData);
-                    file.close();
-                    sendSystemNotification(tr("Screenshot"), fileInfo.absoluteFilePath());
-                }
-                else
-                {
-                    qWarning() << "Failed to save screenshot to" << fileName;
-                }
-            }
-        }
-    });
+    connect(screenshotAction, &QAction::triggered, this, &ScreenWindow::takeScreenshot);
 
     contextMenu->addSeparator();
 
@@ -504,4 +444,82 @@ QMenu* ScreenWindow::createContextMenu()
     )");
 
     return contextMenu;
+}
+
+void ScreenWindow::takeScreenshot()
+{
+    // If screenshot operation is already in progress, ignore new requests
+    if (m_screenshotWatcher->isRunning())
+    {
+        return;
+    }
+
+    // Execute screenshot operation in background thread
+    QFuture<QByteArray> future = QtConcurrent::run([this]() -> QByteArray {
+        DeviceProxy* proxy = DeviceManager::instance().proxyForType(m_device.type);
+        if (proxy)
+        {
+            QByteArray imageData;
+            proxy->screenshot(m_device.serial, imageData);
+            return imageData;
+        }
+        return QByteArray();
+    });
+
+    m_screenshotWatcher->setFuture(future);
+}
+
+QString ScreenWindow::saveScreenshotToFile(const QByteArray& imageData)
+{
+    if (imageData.isEmpty())
+    {
+        return QString();
+    }
+
+    // Generate filename
+    QString fileExt = m_device.type == DeviceType::OHOS ? "jpg" : "png";
+    QString fileName =
+        QString("Screenshot_%1.%2").arg(QDateTime::currentDateTime().toString("yyyyMMddhhmmss")).arg(fileExt);
+
+    // Get save directory
+    QString saveDir = Settings::instance().screenshotDir();
+    if (saveDir.isEmpty())
+    {
+        saveDir = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
+    }
+
+    // Save file
+    QString filePath = QDir::cleanPath(QDir::fromNativeSeparators(QDir(saveDir).filePath(fileName)));
+    QFile file(filePath);
+    if (file.open(QIODevice::WriteOnly))
+    {
+        file.write(imageData);
+        file.close();
+        return filePath;
+    }
+
+    return QString();
+}
+
+void ScreenWindow::onScreenshotCompleted()
+{
+    QByteArray imageData = m_screenshotWatcher->result();
+    if (!imageData.isEmpty())
+    {
+        QString filePath = saveScreenshotToFile(imageData);
+        if (!filePath.isEmpty())
+        {
+            QFileInfo fileInfo(filePath);
+            qDebug() << "Screenshot saved to " << fileInfo.absoluteFilePath();
+            sendSystemNotification(tr("Screenshot"), fileInfo.absoluteFilePath());
+        }
+        else
+        {
+            qWarning() << "Failed to save screenshot";
+        }
+    }
+    else
+    {
+        qWarning() << "Screenshot failed: no image data received";
+    }
 }

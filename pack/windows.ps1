@@ -34,7 +34,7 @@ $version = "$versionMajor.$versionMinor.$versionPatch"
 # Get CPU architecture
 $arch = $env:PROCESSOR_ARCHITECTURE
 switch ($arch) {
-    "AMD64" { $archName = "x64" }
+    "AMD64" { $archName = "x86_64" }
     "ARM64" { $archName = "arm64" }
     default { $archName = $arch }
 }
@@ -160,7 +160,7 @@ if (-not (Test-Path $installerDir)) {
 
 # Inno Setup configuration
 $appIconPath = Convert-Path -Path "$release_dir\..\..\res\app_icons\windows_icon.ico"
-$installerName = "${appName}-v${version}-${archName}"
+$installerName = "${appName}-v${version}-windows-${archName}"
 $issPath = "win_installer.iss"
 $issContent = @"
 ; Auto-generated installer script

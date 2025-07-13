@@ -37,7 +37,7 @@ VERSION="${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}"
 ARCH=$(uname -m)
 case $ARCH in
     "x86_64")
-        ARCH_NAME="x64"
+        ARCH_NAME="x86_64"
         ;;
     "arm64")
         ARCH_NAME="arm64"
@@ -144,8 +144,8 @@ echo "App bundle created successfully: $EXE_PATH"
 echo "Info.plist content:"
 plutil -p ${EXE_PATH}/Contents/Info.plist
 
-# Copy app bundle to release directory with version and architecture in name
-RELEASE_APP_NAME="ScreenCast-v${VERSION}-${ARCH_NAME}.app"
+# Copy app bundle to release directory with version, platform and architecture in name
+RELEASE_APP_NAME="ScreenCast-v${VERSION}-macos-${ARCH_NAME}.app"
 RELEASE_APP_PATH="$RELEASE_DIR/$RELEASE_APP_NAME"
 
 echo "Copying app bundle to release directory..."
@@ -157,7 +157,7 @@ echo "Deploying Qt dependencies and creating DMG..."
 
 # The DMG will be created in the same directory as the app bundle
 # macdeployqt6 automatically names it based on the app bundle name
-DMG_NAME="ScreenCast-v${VERSION}-${ARCH_NAME}.dmg"
+DMG_NAME="ScreenCast-v${VERSION}-macos-${ARCH_NAME}.dmg"
 DMG_PATH="$RELEASE_DIR/$DMG_NAME"
 
 # Verify the DMG was created
