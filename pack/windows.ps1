@@ -171,23 +171,23 @@ if (-not (Test-Path $installerDir)) {
 # Inno Setup configuration
 $appIconPath = Convert-Path -Path "$release_dir\..\..\res\app_icons\windows_icon.ico"
 $installerName = "${appName}-v${version}-windows-${archName}"
-$issPath = "win_installer.iss"
+$issPath = Join-Path $installerDir "win_installer.iss"
 $issContent = @"
 ; Auto-generated installer script
 ; UTF-8 with BOM encoding
 #define MyAppName "$appName"
 #define MyAppVersion "$version"
 #define MyAppPublisher "$companyName"
-#define MyAppURL "https://gitee.com/frankzhang/ScreenCast"
+#define MyAppURL "https://github.com/frankzhangv5/ScreenCast"
 #define MyAppExeName "${appName}.exe"
-#define SourceDir "$release_dir"
-#define MyOutputDir "$installerDir"
-#define MyAppIcon "$appIconPath"
-#define MyLanguageDir "$languagesDir"
+#define SourceDir "$(Convert-Path $release_dir)"
+#define MyOutputDir "$(Convert-Path $installerDir)"
+#define MyAppIcon "$(if ($appIconPath) { Convert-Path $appIconPath } else { '' })"
+#define MyLanguageDir "$(Convert-Path $languagesDir)"
 #define MyInstallerName "$installerName"
 
 [Setup]
-AppId={{4A3A7DED-1F2C-4E8F-9E4B-3C9D8F1A0B2C}
+AppId={{08002A78-CCA5-4196-9B6A-FD8301627357}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppVerName={#MyAppName} {#MyAppVersion}
@@ -197,7 +197,6 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
 DisableProgramGroupPage=yes
-;LicenseFile={#SourceDir}\license.txt ;
 OutputDir={#MyOutputDir}
 OutputBaseFilename={#MyInstallerName}-Setup
 SetupIconFile={#MyAppIcon}
@@ -261,7 +260,6 @@ if (Test-Path $isccPath) {
 # Cleanup and output result
 Write-Host "Cleaning up temporary files..."
 # Remove-Item -Path $issPath -Force -ErrorAction SilentlyContinue
-# Remove-Item -Path *.spec -Force -ErrorAction SilentlyContinue
 
 # Show final result
 if (Test-Path $installerPath) {
