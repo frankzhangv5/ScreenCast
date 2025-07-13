@@ -1,6 +1,8 @@
 # Force UTF-8 encoding
 [System.Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $OutputEncoding = [System.Text.Encoding]::UTF8
+[Console]::InputEncoding = [System.Text.Encoding]::UTF8
+$PSDefaultParameterValues['*:Encoding'] = 'utf8'
 
 # Auto-build Qt Windows application deployment script
 $build_dir = "$PSScriptRoot/../build"
@@ -147,6 +149,14 @@ $versionFile = "$release_dir/ScreenCast.exe"
 $appName = (Get-Item $versionFile).VersionInfo.ProductName
 $companyName = (Get-Item $versionFile).VersionInfo.CompanyName
 
+# Handle potential encoding issues with Chinese characters
+if ([string]::IsNullOrEmpty($appName)) {
+    $appName = "ScreenCast"
+}
+if ([string]::IsNullOrEmpty($companyName)) {
+    $companyName = "ZhangFeng"
+}
+
 # Create installer package
 Write-Host "`nCreating installer package..."
 $isccPath = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
@@ -164,6 +174,7 @@ $installerName = "${appName}-v${version}-windows-${archName}"
 $issPath = "win_installer.iss"
 $issContent = @"
 ; Auto-generated installer script
+; UTF-8 with BOM encoding
 #define MyAppName "$appName"
 #define MyAppVersion "$version"
 #define MyAppPublisher "$companyName"
@@ -217,13 +228,19 @@ Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Fil
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 "@
 
-Set-Content -Path $issPath -Value $issContent -Encoding UTF8
+# Write Inno Setup script with proper UTF-8 encoding and BOM
+$issContentBytes = [System.Text.Encoding]::UTF8.GetPreamble() + [System.Text.Encoding]::UTF8.GetBytes($issContent)
+[System.IO.File]::WriteAllBytes($issPath, $issContentBytes)
 
 # Create installer package using Inno Setup
 Write-Host "Building installer with Inno Setup..."
 if (Test-Path $isccPath) {
     try {
-        & "$isccPath" $issPath
+        # Set environment variable for Inno Setup to use UTF-8
+        $env:INNO_USE_UTF8 = "1"
+        
+        # Compile with explicit UTF-8 handling
+        & "$isccPath" $issPath /Q
         if ($LASTEXITCODE -eq 0) {
             $installerPath = Join-Path $installerDir ${installerName}-Setup.exe
             Write-Host "Inno Setup installer created successfully: $installerPath"
