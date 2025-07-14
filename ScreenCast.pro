@@ -59,10 +59,10 @@ win32 {
     LIBS += -lmsvcrt
 
     # Automatically copy DLLs to build directory
-    FFMPEG_DLLS = $$FFMPEG_DIR/bin/
+    FFMPEG_DLL_DIR = $$FFMPEG_DIR/bin
 
     COPY_DLLS.target = dllcopy
-    COPY_DLLS.commands = $$QMAKE_COPY_DIR $$replace(FFMPEG_DLLS, /, \\) $$replace($$OUT_PWD, /, \\)
+    COPY_DLLS.commands = cp -f $$FFMPEG_DLL_DIR/*.dll $$OUT_PWD
     PRE_TARGETDEPS += dllcopy
     QMAKE_EXTRA_TARGETS += COPY_DLLS
 }
