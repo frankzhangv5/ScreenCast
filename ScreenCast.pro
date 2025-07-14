@@ -56,7 +56,7 @@ win32 {
             -lavutil
 
     # Add missing runtime library
-    LIBS += -lmsvcrt
+    QMAKE_LFLAGS += -municode
 
     # Automatically copy DLLs to build directory
     FFMPEG_DLL_DIR = $$FFMPEG_DIR/bin

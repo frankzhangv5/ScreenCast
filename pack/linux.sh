@@ -226,7 +226,7 @@ echo "Copying files to DEB structure..."
 cp "$APPDIR/usr/bin/$APP_NAME" "$DEB_BIN_DIR/"
 
 mkdir -p "$DEB_LIB_DIR"
-cp -rv "$APPDIR/usr/lib/*" "$DEB_LIB_DIR/"
+cp -rv "$APPDIR/usr/lib/"* "$DEB_LIB_DIR/"
 
 # Copy Qt plugins
 if [ -d "$APPDIR/usr/plugins" ]; then
