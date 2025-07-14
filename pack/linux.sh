@@ -183,82 +183,6 @@ cd $RELEASE_DIR
     -qmake=$QMAKE \
     -no-translations
 
-SO_LIST=(
-    "libQt6Widgets.so.6"
-    "libQt6Gui.so.6"
-    "libQt6Network.so.6"
-    "libQt6Core.so.6"
-    "libQt6DBus.so.6"
-    "libgssapi_krb5.so.2"
-    "libicui18n.so.73"
-    "libicuuc.so.73"
-    "libicudata.so.73"
-    "libkrb5.so.3"
-    "libk5crypto.so.3"
-    "libkrb5support.so.0"
-    "libkeyutils.so.1"
-    "libQt6XcbQpa.so.6"
-    "libQt6Svg.so.6"
-    "libavcodec.so.*"
-    "libavformat.so.*"
-    "libswscale.so.*"
-    "libavutil.so.*"
-    "libswscale.so.*"
-    "libva-drm.so.*"
-    "libva.so.*"
-    "libva-x11.so.*"
-    "libvdpau.so.*"
-    "libOpenCL.so.*"
-    "libswresample.so.*"
-    "libzvbi.so.*"
-    "libsnappy.so.*"
-    "libaom.so.*"
-    "libcodec2.so.*"
-    "libgsm.so.*"
-    "libshine.so.*"
-    "libx264.so.*"
-    "libx265.so.*"
-    "libxvidcore.so.*"
-    "libxcb-cursor.so.*"
-    "libxcb-glx.so.*"
-    "libxcb-icccm.so.*"
-    "libxcb-image.so.*"
-    "libxcb-keysyms.so.*"
-    "libxcb-randr.so.*"
-    "libxcb-render.so.*"
-    "libxcb-render-util.so.*"
-    "libxcb-shape.so.*"
-    "libxcb-shm.so.*"
-    "libxcb-sync.so.*"
-    "libxcb-util.so.*"
-    "libxcb-xfixes.so.*"
-    "libxcb-xkb.so.*"
-    "libfuse.so.*"
-)
-
-cd "$APPDIR/usr/lib"
-for so in *; do
-  keep=false
-  for wanted in "${SO_LIST[@]}"; do
-    if [[ "$wanted" == *".so.*" ]]; then
-      # Handle wildcard patterns
-      if [[ "$so" == ${wanted} ]]; then
-        keep=true
-        break
-      fi
-    else
-      # Handle exact matches
-      if [[ "$so" == "$wanted" ]]; then
-        keep=true
-        break
-      fi
-    fi
-  done
-  if [ "$keep" = false ]; then
-    rm -vf "$so"
-  fi
-done
-
 # Strip binaries to reduce size
 echo "Stripping binaries..."
 find "$APPDIR" -type f -name "*.so*" -exec strip --strip-unneeded {} + || true
@@ -302,17 +226,7 @@ echo "Copying files to DEB structure..."
 cp "$APPDIR/usr/bin/$APP_NAME" "$DEB_BIN_DIR/"
 
 mkdir -p "$DEB_LIB_DIR"
-for so in "${SO_LIST[@]}"; do
-  if [[ "$so" == *".so.*" ]]; then
-    # Handle wildcard patterns like "libavcodec.so.*"
-    find "$APPDIR/usr/lib" -name "$so" -exec cp {} "$DEB_LIB_DIR/" \;
-  else
-    # Handle exact matches
-    if [ -f "$APPDIR/usr/lib/$so" ]; then
-      cp "$APPDIR/usr/lib/$so" "$DEB_LIB_DIR/"
-    fi
-  fi
-done
+cp -rv "$APPDIR/usr/lib/*" "$DEB_LIB_DIR/"
 
 # Copy Qt plugins
 if [ -d "$APPDIR/usr/plugins" ]; then

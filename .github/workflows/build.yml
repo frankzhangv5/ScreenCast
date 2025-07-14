@@ -20,7 +20,7 @@ jobs:
       uses: jurplel/install-qt-action@v3
       with:
         aqtversion: '==3.1.*'
-        version: '6.8.3'
+        version: '6.9.1'
         host: 'windows'
         target: 'desktop'
         arch: 'win64_mingw'
@@ -88,7 +88,7 @@ jobs:
       uses: jurplel/install-qt-action@v3
       with:
         aqtversion: '==3.1.*'
-        version: '6.8.3'
+        version: '6.9.1'
         host: 'linux'
         target: 'desktop'
         arch: 'linux_gcc_64'
@@ -159,7 +159,7 @@ jobs:
       uses: jurplel/install-qt-action@v3
       with:
         aqtversion: '==3.1.*'
-        version: '6.8.3'
+        version: '6.9.1'
         host: 'mac'
         target: 'desktop'
         arch: 'clang_64'
@@ -218,7 +218,7 @@ jobs:
       uses: jurplel/install-qt-action@v3
       with:
         aqtversion: '==3.1.*'
-        version: '6.8.3'
+        version: '6.9.1'
         host: 'mac'
         target: 'desktop'
         arch: 'clang_64'
