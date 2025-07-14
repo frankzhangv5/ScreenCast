@@ -39,7 +39,7 @@ VERSION="${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}"
 ARCH=$(uname -m)
 case $ARCH in
     "x86_64")
-        ARCH_NAME="x86_64"
+        ARCH_NAME="amd64"
         ;;
     "aarch64"|"arm64")
         ARCH_NAME="arm64"
