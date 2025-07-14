@@ -55,7 +55,11 @@ win32 {
             -lswscale \
             -lavutil
 
-    # Add missing runtime library
+    # Fix MinGW entry point issues
+    LIBS += -lmingw32 -lmingwex -lpthread -luser32 -lgdi32 -lshell32
+
+    # Ensure Unicode support
+    DEFINES += UNICODE _UNICODE
     QMAKE_LFLAGS += -municode
 
     # Automatically copy DLLs to build directory

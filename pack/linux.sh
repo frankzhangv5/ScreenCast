@@ -226,7 +226,19 @@ echo "Copying files to DEB structure..."
 cp "$APPDIR/usr/bin/$APP_NAME" "$DEB_BIN_DIR/"
 
 mkdir -p "$DEB_LIB_DIR"
-cp -rv "$APPDIR/usr/lib/"* "$DEB_LIB_DIR/"
+for so in "$APPDIR/usr/lib/"*; do
+    so_base=$(basename "$so")
+    if [[ "$so_base" == libc.so* ]] || \
+       [[ "$so_base" == libpthread.so* ]] || \
+       [[ "$so_base" == libm.so* ]] || \
+       [[ "$so_base" == libdl.so* ]] || \
+       [[ "$so_base" == librt.so* ]] || \
+       [[ "$so_base" == libstdc++.so* ]] || \
+       [[ "$so_base" == libgcc_s.so* ]]; then
+        continue
+    fi
+    cp -v "$so" "$DEB_LIB_DIR/"
+done
 
 # Copy Qt plugins
 if [ -d "$APPDIR/usr/plugins" ]; then
