@@ -178,11 +178,11 @@ EOF
 chmod +x "$APPDIR/AppRun"
 
 cd $RELEASE_DIR
+export APPIMAGE_EXTRACT_AND_RUN=1
 "$LINUXDEPLOY_TOOL" "$APPDIR/usr/share/applications/ScreenCast.desktop" \
     -bundle-non-qt-libs \
     -qmake=$QMAKE \
-    -no-translations \
-    -appimage-extract-and-run
+    -no-translations
 
 # Strip binaries to reduce size
 echo "Stripping binaries..."
@@ -191,7 +191,6 @@ strip --strip-unneeded "$APPDIR/usr/bin/$APP_NAME" || true
 
 # use appimagetool to create AppImage
 APPIMAGE_NAME="ScreenCast-v${VERSION}-linux-${ARCH_NAME}.AppImage"
-export APPIMAGE_EXTRACT_AND_RUN=1
 "$SCRIPT_DIR/tools/appimagetool-x86_64.AppImage" -squashfs "$APPDIR" "$RELEASE_DIR/$APPIMAGE_NAME" --runtime-file="$SCRIPT_DIR/tools/runtime-x86_64"
 
 # Find the generated AppImage
