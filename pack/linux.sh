@@ -178,7 +178,6 @@ EOF
 chmod +x "$APPDIR/AppRun"
 
 cd $RELEASE_DIR
-export APPIMAGE_EXTRACT_AND_RUN=1
 "$LINUXDEPLOY_TOOL" "$APPDIR/usr/share/applications/ScreenCast.desktop" \
     -bundle-non-qt-libs \
     -qmake=$QMAKE \

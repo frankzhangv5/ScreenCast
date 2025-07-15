@@ -125,7 +125,7 @@ jobs:
           set -e
           export DEBIAN_FRONTEND=noninteractive
           apt-get update
-          apt-get install -y tzdata build-essential git wget yasm pkg-config cmake ninja-build imagemagick fuse libfuse2 libgl1-mesa-dev libxkbcommon-dev
+          apt-get install -y tzdata build-essential git wget yasm pkg-config cmake ninja-build imagemagick fuse libfuse2 libgl1-mesa-dev libxkbcommon-dev libxkbcommon-x11-0 libxkbcommon-x11-dev
 
           cd /tmp
           wget https://github.com/ffmpeg/ffmpeg/archive/refs/tags/n7.1.tar.gz
