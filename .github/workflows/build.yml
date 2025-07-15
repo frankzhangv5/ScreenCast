@@ -139,6 +139,7 @@ jobs:
           chmod +x linux.sh
           export Qt6_DIR=/qt6
           export PKG_CONFIG_PATH=/workspace/ffmpeg-static/lib/pkgconfig:$PKG_CONFIG_PATH
+          export APPIMAGE_EXTRACT_AND_RUN=1
           ./linux.sh
 
     - name: Upload Linux Artifacts
