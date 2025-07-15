@@ -29,8 +29,7 @@ jobs:
         Invoke-WebRequest -Uri $url -OutFile $tempFile
         New-Item -ItemType Directory -Path $installDir -Force
         & "C:\ProgramData\chocolatey\tools\7z.exe" x $tempFile "-o$installDir" -y
-        $env:Path = ($env:Path -split ';' | Where-Object { $_ -notmatch 'C:\\mingw64\\bin' }) -join ';'
-        $env:Path += ";$installDir\bin"
+        dir $installDir
 
     - name: Setup Qt
       uses: jurplel/install-qt-action@v3
@@ -70,9 +69,10 @@ jobs:
         PATH: C:\mingw64-msvcrt\bin;${{ env.PATH }}
       shell: powershell
       run: |
+        echo $env:Path
         cd pack
         ./windows.ps1
-    
+
     - name: Upload Windows Artifacts
       uses: actions/upload-artifact@v4
       with:

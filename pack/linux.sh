@@ -61,12 +61,12 @@ function safe_remove() {
 }
 
 # Install required packages
-for pkg in libavcodec-dev libavformat-dev libavutil-dev libswscale-dev imagemagick fuse libfuse2 libxcb-cursor0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render0 libxcb-render-util0 libxcb-shape0 libxcb-shm0 libxcb-sync1 libxcb-util1 libxcb-xfixes0 libxcb-xkb1; do
-    if ! dpkg -s "$pkg" &> /dev/null; then
-        echo "Installing: $pkg"
-        sudo apt install -y $pkg
-    fi
-done
+# for pkg in libavcodec-dev libavformat-dev libavutil-dev libswscale-dev imagemagick fuse libfuse2; do
+#     if ! dpkg -s "$pkg" &> /dev/null; then
+#         echo "Installing: $pkg"
+#         sudo apt install -y $pkg
+#     fi
+# done
 
 echo "Starting build process..."
 echo "Using Qt home: $QT_HOME"
