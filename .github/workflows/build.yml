@@ -16,7 +16,7 @@ jobs:
       with:
         submodules: true
 
-    - name: Install MinGW^M
+    - name: Install MinGW
       run: |
         choco uninstall mingw -y
         choco install -y 7zip
@@ -28,6 +28,7 @@ jobs:
         Invoke-WebRequest -Uri $url -OutFile $tempFile
         New-Item -ItemType Directory -Path $installDir -Force
         & "C:\ProgramData\chocolatey\tools\7z.exe" x $tempFile "-o$installDir" -y
+        $env:Path = ($env:Path -split ';' | Where-Object { $_ -notmatch 'C:\\mingw64\\bin' }) -join ';'
         $env:Path += ";$installDir\bin"
 
     - name: Setup Qt
@@ -118,8 +119,9 @@ jobs:
           -v ${{ env.Qt6_DIR }}:/qt6
         run: |
           set -e
+          export DEBIAN_FRONTEND=noninteractive
           apt-get update
-          apt-get install -y build-essential git wget yasm pkg-config cmake ninja-build imagemagick fuse libfuse2
+          apt-get install -y tzdata build-essential git wget yasm pkg-config cmake ninja-build imagemagick fuse libfuse2
 
           cd /tmp
           wget https://github.com/ffmpeg/ffmpeg/archive/refs/tags/n7.1.tar.gz
