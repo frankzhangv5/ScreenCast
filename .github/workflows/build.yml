@@ -65,6 +65,7 @@ jobs:
       env:
         Qt6_DIR: ${{ env.Qt6_DIR }}
         QT_ROOT_DIR: ${{ env.QT_ROOT_DIR }}
+        PATH: C:\mingw64-msvcrt\bin;${{ env.PATH }}
       run: |
         cd pack
         powershell -ExecutionPolicy Bypass -File windows.ps1
@@ -125,8 +126,8 @@ jobs:
 
           cd /tmp
           wget https://github.com/ffmpeg/ffmpeg/archive/refs/tags/n7.1.tar.gz
-          tar -xzf n7.1.tar.gz
-          cd ffmpeg-7.1
+          tar -xzf n7.1.tar.gz -C /tmp
+          cd /tmp/ffmpeg-n7.1
           ./configure --prefix=/workspace/ffmpeg-static --enable-static --disable-shared --disable-doc --disable-programs
           make -j$(nproc)
           make install
