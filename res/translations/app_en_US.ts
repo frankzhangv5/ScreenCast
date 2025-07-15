@@ -46,12 +46,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/ui/DeviceListPage.cpp" line="258"/>
+        <location filename="../../src/ui/DeviceListPage.cpp" line="259"/>
         <source>Rename Device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/ui/DeviceListPage.cpp" line="258"/>
+        <location filename="../../src/ui/DeviceListPage.cpp" line="259"/>
         <source>Enter new name for device:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -59,22 +59,22 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../src/ui/MainWindow.cpp" line="76"/>
+        <location filename="../../src/ui/MainWindow.cpp" line="91"/>
         <source>Device connected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/ui/MainWindow.cpp" line="77"/>
+        <location filename="../../src/ui/MainWindow.cpp" line="92"/>
         <source>Device connected: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/ui/MainWindow.cpp" line="88"/>
+        <location filename="../../src/ui/MainWindow.cpp" line="103"/>
         <source>Device disconnected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/ui/MainWindow.cpp" line="89"/>
+        <location filename="../../src/ui/MainWindow.cpp" line="104"/>
         <source>Device disconnected: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -110,74 +110,73 @@
 <context>
     <name>ScreenWindow</name>
     <message>
-        <location filename="../../src/ui/ScreenWindow.cpp" line="27"/>
+        <location filename="../../src/ui/ScreenWindow.cpp" line="33"/>
         <source>Connecting ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/ui/ScreenWindow.cpp" line="78"/>
-        <location filename="../../src/ui/ScreenWindow.cpp" line="397"/>
-        <location filename="../../src/ui/ScreenWindow.cpp" line="423"/>
+        <location filename="../../src/ui/ScreenWindow.cpp" line="399"/>
+        <location filename="../../src/ui/ScreenWindow.cpp" line="514"/>
         <source>Screenshot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/ui/ScreenWindow.cpp" line="209"/>
+        <location filename="../../src/ui/ScreenWindow.cpp" line="211"/>
         <source>Error occurred: please close the window and try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/ui/ScreenWindow.cpp" line="230"/>
+        <location filename="../../src/ui/ScreenWindow.cpp" line="232"/>
         <source>Home</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/ui/ScreenWindow.cpp" line="238"/>
+        <location filename="../../src/ui/ScreenWindow.cpp" line="240"/>
         <source>Back</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/ui/ScreenWindow.cpp" line="246"/>
+        <location filename="../../src/ui/ScreenWindow.cpp" line="248"/>
         <source>Menu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/ui/ScreenWindow.cpp" line="299"/>
+        <location filename="../../src/ui/ScreenWindow.cpp" line="301"/>
         <source>Wake</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/ui/ScreenWindow.cpp" line="307"/>
+        <location filename="../../src/ui/ScreenWindow.cpp" line="309"/>
         <source>Sleep</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/ui/ScreenWindow.cpp" line="437"/>
+        <location filename="../../src/ui/ScreenWindow.cpp" line="406"/>
         <source>Navigation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/ui/ScreenWindow.cpp" line="443"/>
+        <location filename="../../src/ui/ScreenWindow.cpp" line="412"/>
         <source>Shortcuts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/ui/ScreenWindow.cpp" line="323"/>
+        <location filename="../../src/ui/ScreenWindow.cpp" line="325"/>
         <source>Unlock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/ui/ScreenWindow.cpp" line="335"/>
+        <location filename="../../src/ui/ScreenWindow.cpp" line="337"/>
         <source>Reboot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/ui/ScreenWindow.cpp" line="343"/>
+        <location filename="../../src/ui/ScreenWindow.cpp" line="345"/>
         <source>Shutdown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/ui/ScreenWindow.cpp" line="315"/>
+        <location filename="../../src/ui/ScreenWindow.cpp" line="317"/>
         <source>Rotate</source>
         <translation type="unfinished"></translation>
     </message>
@@ -438,12 +437,12 @@ The application will restart to apply the changes.</source>
 <context>
     <name>TrayManager</name>
     <message>
-        <location filename="../../src/ui/TrayManager.cpp" line="60"/>
+        <location filename="../../src/ui/TrayManager.cpp" line="64"/>
         <source>Show</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/ui/TrayManager.cpp" line="63"/>
+        <location filename="../../src/ui/TrayManager.cpp" line="67"/>
         <source>Exit</source>
         <translation type="unfinished"></translation>
     </message>
