@@ -181,7 +181,8 @@ cd $RELEASE_DIR
 "$LINUXDEPLOY_TOOL" "$APPDIR/usr/share/applications/ScreenCast.desktop" \
     -bundle-non-qt-libs \
     -qmake=$QMAKE \
-    -no-translations
+    -no-translations \
+    -appimage-extract-and-run
 
 # Strip binaries to reduce size
 echo "Stripping binaries..."
@@ -190,7 +191,8 @@ strip --strip-unneeded "$APPDIR/usr/bin/$APP_NAME" || true
 
 # use appimagetool to create AppImage
 APPIMAGE_NAME="ScreenCast-v${VERSION}-linux-${ARCH_NAME}.AppImage"
-"$SCRIPT_DIR/tools/appimagetool-x86_64.AppImage" "$APPDIR" "$RELEASE_DIR/$APPIMAGE_NAME" --runtime-file="$SCRIPT_DIR/tools/runtime-x86_64"
+export APPIMAGE_EXTRACT_AND_RUN=1
+"$SCRIPT_DIR/tools/appimagetool-x86_64.AppImage" -squashfs "$APPDIR" "$RELEASE_DIR/$APPIMAGE_NAME" --runtime-file="$SCRIPT_DIR/tools/runtime-x86_64"
 
 # Find the generated AppImage
 APPIMAGE_PATH=$(find "$RELEASE_DIR" -maxdepth 1 -name "${APPIMAGE_NAME}" | head -n 1)

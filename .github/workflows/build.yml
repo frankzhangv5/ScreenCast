@@ -66,7 +66,7 @@ jobs:
       env:
         Qt6_DIR: ${{ env.Qt6_DIR }}
         QT_ROOT_DIR: ${{ env.QT_ROOT_DIR }}
-        PATH: C:\mingw64-msvcrt\mingw64\bin;${{ env.PATH }}
+        PATH: C:\mingw64-msvcrt\mingw64\bin;C:\Windows\System32\WindowsPowerShell\v1.0;C:\Program Files\Git\cmd;${{ env.PATH }}
       shell: powershell
       run: |
         echo $env:Path
