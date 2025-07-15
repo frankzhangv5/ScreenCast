@@ -55,31 +55,19 @@ win32 {
             -lswscale \
             -lavutil
 
-    # Fix MinGW entry point issues
-    LIBS += -lmingw32 -lmingwex -lpthread -luser32 -lgdi32 -lshell32
-
-    # Ensure Unicode support
-    DEFINES += UNICODE _UNICODE
-    QMAKE_LFLAGS += -municode
-
     # Automatically copy DLLs to build directory
     FFMPEG_DLL_DIR = $$FFMPEG_DIR/bin
 
     COPY_DLLS.target = dllcopy
-    COPY_DLLS.commands = cp -f $$FFMPEG_DLL_DIR/*.dll $$OUT_PWD
+    COPY_DLLS.commands =  $$QMAKE_COPY_DIR $$replace(FFMPEG_DLL_DIR, /, \\) $$replace($$OUT_PWD, /, \\)
     PRE_TARGETDEPS += dllcopy
     QMAKE_EXTRA_TARGETS += COPY_DLLS
 }
 
 unix:!macx {
     # Linux configuration
-    CONFIG += link_pkgconfig
-    PKGCONFIG += libavcodec libavformat libswscale
-    LIBS += -L/usr/local/lib \
-        -lavcodec \
-        -lavformat \
-        -lswscale \
-        -lavutil
+    CONFIG += static link_pkgconfig
+    PKGCONFIG += libavcodec libavformat libswscale libavutil
 }
 
 macx {

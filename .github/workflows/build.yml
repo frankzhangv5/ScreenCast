@@ -15,7 +15,21 @@ jobs:
     - uses: actions/checkout@v4
       with:
         submodules: true
-    
+
+    - name: Install MinGW^M
+      run: |
+        choco uninstall mingw -y
+        choco install -y 7zip
+        # Download and install MinGW 13.1.0 msvcrt
+        $url = "https://github.com/niXman/mingw-builds-binaries/releases/download/13.1.0-rt_v11-rev1/x86_64-13.1.0-release-posix-seh-msvcrt-rt_v11-rev1.7z"
+        $installDir = "C:\mingw64-msvcrt"
+        $tempFile = "$env:TEMP\mingw-msvcrt.7z"
+        Write-Host "Downloading MinGW 13.1.0 msvcrt..."
+        Invoke-WebRequest -Uri $url -OutFile $tempFile
+        New-Item -ItemType Directory -Path $installDir -Force
+        & "C:\ProgramData\chocolatey\tools\7z.exe" x $tempFile "-o$installDir" -y
+        $env:Path += ";$installDir\bin"
+
     - name: Setup Qt
       uses: jurplel/install-qt-action@v3
       with:
@@ -24,6 +38,7 @@ jobs:
         host: 'windows'
         target: 'desktop'
         arch: 'win64_mingw'
+        mingw: 'C:\mingw64-msvcrt'
     
     - name: Install Inno Setup
       run: |
@@ -75,6 +90,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+
   build-linux:
     runs-on: ubuntu-22.04
     permissions:
@@ -83,7 +99,7 @@ jobs:
     - uses: actions/checkout@v4
       with:
         submodules: true
-    
+
     - name: Setup Qt
       uses: jurplel/install-qt-action@v3
       with:
@@ -92,21 +108,33 @@ jobs:
         host: 'linux'
         target: 'desktop'
         arch: 'linux_gcc_64'
-    
-    - name: Install Dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y libavcodec-dev libavformat-dev libavutil-dev libswscale-dev imagemagick fuse libfuse2
-    
-    - name: Build Linux
-      env:
-        Qt6_DIR: ${{ env.Qt6_DIR }}
-        QT_ROOT_DIR: ${{ env.QT_ROOT_DIR }}
-      run: |
-        cd pack
-        chmod +x linux.sh
-        ./linux.sh
-    
+
+    - name: Build in Docker (Ubuntu 20.04, static ffmpeg)
+      uses: addnab/docker-run-action@v3
+      with:
+        image: ubuntu:20.04
+        options: >-
+          -v ${{ github.workspace }}:/workspace
+          -v ${{ env.Qt6_DIR }}:/qt6
+        run: |
+          set -e
+          apt-get update
+          apt-get install -y build-essential git wget yasm pkg-config cmake ninja-build imagemagick fuse libfuse2
+
+          cd /tmp
+          wget https://github.com/ffmpeg/ffmpeg/archive/refs/tags/n7.1.tar.gz
+          tar -xzf n7.1.tar.gz
+          cd ffmpeg-7.1
+          ./configure --prefix=/workspace/ffmpeg-static --enable-static --disable-shared --disable-doc --disable-programs
+          make -j$(nproc)
+          make install
+
+          cd /workspace/pack
+          chmod +x linux.sh
+          export Qt6_DIR=/qt6
+          export PKG_CONFIG_PATH=/workspace/ffmpeg-static/lib/pkgconfig:$PKG_CONFIG_PATH
+          ./linux.sh
+
     - name: Upload Linux Artifacts
       uses: actions/upload-artifact@v4
       with:
