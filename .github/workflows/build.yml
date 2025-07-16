@@ -124,7 +124,8 @@ jobs:
           ln -sf /usr/local/bin/pip3 /usr/bin/pip3
           pip3 install aqtinstall
           apt-get install -y tzdata build-essential git file wget yasm pkg-config cmake ninja-build imagemagick \
-                                libgl1-mesa-dev libxkbcommon-dev libxcb-cursor-dev libxcb-xinerama0
+                                libgl1-mesa-dev libxkbcommon-dev libxcb-cursor-dev libxcb-xinerama0 \
+                                libxkbcommon-x11-dev libxcb1-dev
 
           QT_INSTALL_DIR=/workspace/qt6
           python3 -m aqt install-qt linux desktop 6.9.1  --outputdir $QT_INSTALL_DIR
@@ -134,7 +135,28 @@ jobs:
           wget https://github.com/ffmpeg/ffmpeg/archive/refs/tags/n7.1.tar.gz
           tar -xzf n7.1.tar.gz
           cd FFmpeg-n7.1
-          ./configure --prefix=/workspace/ffmpeg-static --enable-static --disable-shared --disable-doc --disable-programs
+          ./configure --prefix=/workspace/ffmpeg-static --enable-static --disable-shared --disable-doc --disable-programs \
+                      --disable-vaapi --disable-vdpau \
+                      --disable-avdevice \
+                      --disable-swresample \
+                      --disable-postproc \
+                      --disable-avfilter \
+                      --disable-encoders \
+                      --disable-hwaccels \
+                      --disable-bsfs \
+                      --disable-protocols \
+                      --disable-indevs \
+                      --disable-outdevs \
+                      --disable-demuxers \
+                      --disable-muxers \
+                      --enable-demuxer=mov \
+                      --enable-demuxer=h264 \
+                      --enable-decoder=h264 \
+                      --enable-parser=h264 \
+                      --disable-iconv \
+                      --disable-sdl2 \
+                      --disable-debug \
+                      --enable-small
           make -j$(nproc)
           make install
 
