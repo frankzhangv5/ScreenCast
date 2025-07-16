@@ -12,9 +12,26 @@
 #include <QSplashScreen>
 #include <QTimer>
 #include <QTranslator>
+#include <QLocalServer>
+#include <QLocalSocket>
+#include <QString>
 
 int main(int argc, char* argv[])
 {
+    const QString kSingleInstanceKey = APP_ID;
+    QLocalSocket socket;
+    socket.connectToServer(kSingleInstanceKey);
+    if (socket.waitForConnected(100)) {
+        socket.write("activate");
+        socket.flush();
+        socket.waitForBytesWritten(100);
+        socket.disconnectFromServer();
+        return 0;
+    }
+    QLocalServer server;
+    server.removeServer(kSingleInstanceKey);
+    server.listen(kSingleInstanceKey);
+
     int exitCode = 0;
     do
     {
@@ -57,6 +74,21 @@ int main(int argc, char* argv[])
         QThread::msleep(500);
         MainWindow w;
         TrayManager::instance()->setMainWindow(&w);
+
+        QObject::connect(&server, &QLocalServer::newConnection, [&server, &w](){
+            QLocalSocket *clientConnection = server.nextPendingConnection();
+            if (clientConnection) {
+                clientConnection->waitForReadyRead(100);
+                QByteArray data = clientConnection->readAll();
+                if (data == "activate") {
+                    w.show();
+                    w.raise();
+                    w.activateWindow();
+                }
+                clientConnection->disconnectFromServer();
+                clientConnection->deleteLater();
+            }
+        });
 
         // Set timer to close splash screen
         QTimer::singleShot(1500, &splash, [&] {

@@ -183,6 +183,11 @@ cd $RELEASE_DIR
     -qmake=$QMAKE \
     -no-translations
 
+for lib in libc.so* libpthread.so* libm.so* libdl.so* librt.so* libstdc++.so* libgcc_s.so*; do
+    rm -f "$APPDIR/usr/lib/$lib"
+done
+
+
 # Strip binaries to reduce size
 echo "Stripping binaries..."
 find "$APPDIR" -type f -name "*.so*" -exec strip --strip-unneeded {} + || true
