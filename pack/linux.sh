@@ -214,7 +214,7 @@ DEB_SHARE_DIR="$DEB_PKG_DIR/usr/share"
 DEB_APP_DIR="$DEB_SHARE_DIR/applications"
 DEB_ICON_DIR="$DEB_SHARE_DIR/icons/hicolor/256x256/apps"
 DEB_LIB_DIR="$DEB_PKG_DIR/usr/lib"
-DEB_PLUGINS_DIR="$DEB_PKG_DIR/usr/plugins"
+DEB_PLUGINS_DIR="$DEB_PKG_DIR/usr/bin"
 
 # Clean and create DEB directory structure
 rm -rf "$DEB_DIR"
