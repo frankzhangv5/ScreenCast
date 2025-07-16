@@ -124,8 +124,10 @@ jobs:
           ln -sf /usr/local/bin/pip3 /usr/bin/pip3
           pip3 install aqtinstall
           apt-get install -y tzdata build-essential git file wget yasm pkg-config cmake ninja-build imagemagick \
-                                libgl1-mesa-dev libxkbcommon-dev libxcb-cursor-dev libxcb-xinerama0 \
-                                libxkbcommon-x11-dev libxcb1-dev
+                                libgl1-mesa-dev libxkbcommon-dev libxcb-cursor-dev libxcb-xinerama0 libxcb-xkb-dev \
+                                libxkbcommon-x11-dev libxcb1-dev libxcb-icccm4-dev libxcb-glx0-dev libxcb-image0-dev \
+                                libxcb-keysyms1-dev libxcb-randr0-dev libxcb-render-util0-dev libxcb-render0-dev \
+                                libxcb-shape0-dev libxcb-shm0-dev libxcb-sync-dev libxcb-util-dev libxcb-xfixes0-dev
 
           QT_INSTALL_DIR=/workspace/qt6
           python3 -m aqt install-qt linux desktop 6.9.1  --outputdir $QT_INSTALL_DIR
