@@ -115,7 +115,15 @@ jobs:
           set -e
           export DEBIAN_FRONTEND=noninteractive
           apt-get update
-          apt-get install -y python3 python3-pip tzdata build-essential git file wget yasm pkg-config cmake ninja-build imagemagick fuse libfuse2 \
+          apt-get install -y software-properties-common
+          add-apt-repository ppa:deadsnakes/ppa -y
+          apt-get update
+          apt-get install -y python3.11 python3.11-distutils python3.11-venv python3.11-dev
+          update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
+          curl -sS https://bootstrap.pypa.io/get-pip.py | python3.11
+          ln -sf /usr/local/bin/pip3 /usr/bin/pip3
+          pip3 install aqtinstall
+          apt-get install -y tzdata build-essential git file wget yasm pkg-config cmake ninja-build imagemagick fuse libfuse2 \
                                 libgl1-mesa-dev libxkbcommon-dev libxkbcommon-x11-0 libxkbcommon-x11-dev \
                                 libxcb1 libxcb1-dev \
                                 libxcb-cursor0 libxcb-cursor-dev \
@@ -132,8 +140,6 @@ jobs:
                                 libxcb-util1 libxcb-util-dev \
                                 libxcb-xfixes0 libxcb-xfixes0-dev \
                                 libxcb-xkb1 libxcb-xkb-dev
-
-          pip3 install aqtinstall
 
           QT_INSTALL_DIR=/workspace/qt6
           python3 -m aqt install-qt linux desktop 6.9.1  --outputdir $QT_INSTALL_DIR
