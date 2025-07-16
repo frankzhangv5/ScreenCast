@@ -187,12 +187,6 @@ for lib in libc.so* libpthread.so* libm.so* libdl.so* librt.so* libstdc++.so* li
     rm -f "$APPDIR/usr/lib/$lib"
 done
 
-
-# Strip binaries to reduce size
-echo "Stripping binaries..."
-find "$APPDIR" -type f -name "*.so*" -exec strip --strip-unneeded {} + || true
-strip --strip-unneeded "$APPDIR/usr/bin/$APP_NAME" || true
-
 # use appimagetool to create AppImage
 APPIMAGE_NAME="ScreenCast-v${VERSION}-linux-${ARCH_NAME}.AppImage"
 "$SCRIPT_DIR/tools/appimagetool-x86_64.AppImage" "$APPDIR" "$RELEASE_DIR/$APPIMAGE_NAME" --runtime-file="$SCRIPT_DIR/tools/runtime-x86_64"
