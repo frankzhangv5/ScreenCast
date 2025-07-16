@@ -133,7 +133,7 @@ jobs:
                                 libxcb-xfixes0 libxcb-xfixes0-dev \
                                 libxcb-xkb1 libxcb-xkb-dev
 
-          pip3 install aqtinstall==3.1.7
+          pip3 install aqtinstall
 
           QT_INSTALL_DIR=/workspace/qt6
           python3 -m aqt install-qt linux desktop 6.9.1  --outputdir $QT_INSTALL_DIR
