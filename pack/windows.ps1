@@ -129,6 +129,15 @@ else {
     exit 1
 }
 
+# Copy ffmpeg dlls to release directory
+$ffmpegBin = "$PSScriptRoot/../external/ffmpeg/bin"
+if (Test-Path $ffmpegBin) {
+    Copy-Item "$ffmpegBin\\*.dll" $release_dir -Force
+    Write-Host "Copied ffmpeg dlls to release directory."
+} else {
+    Write-Warning "ffmpeg bin directory not found: $ffmpegBin"
+}
+
 # Deploy Qt dependencies
 Write-Host "Deploying Qt dependencies..."
 & $deploy_tool "$release_dir/ScreenCast.exe" --no-translations --no-system-d3d-compiler --no-opengl-sw --release
