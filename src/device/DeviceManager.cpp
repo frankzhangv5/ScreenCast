@@ -93,6 +93,9 @@ void DeviceManager::loadPersistentData()
             info.forwardPort = deviceObj["forwardPort"].toInt();
             info.scale = deviceObj["scale"].toDouble(1.0);
 
+            if (m_port < info.forwardPort) {
+                m_port = info.forwardPort;
+            }
             m_deviceCache.put(info.serial, info);
         }
         qDebug() << "Loaded" << cacheArray.size() << "cached devices";
@@ -343,7 +346,7 @@ void DeviceManager::processNewDevice(const DeviceInfo& dev)
     }
     else
     {
-        cached->forwardPort = forwardPort;
+        forwardPort = cached->forwardPort;
         DeviceProxy* proxy = proxyForType(dev.type);
         if (proxy)
         {
@@ -392,7 +395,7 @@ void DeviceManager::LRUCache::remove(const QString& key)
 int DeviceManager::nextForwardPort()
 {
     QMutexLocker locker(&m_portMutex);
-    return m_port++;
+    return ++m_port;
 }
 
 bool DeviceManager::renameDevice(const QString& serial, const QString& newName)
