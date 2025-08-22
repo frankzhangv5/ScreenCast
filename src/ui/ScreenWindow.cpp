@@ -45,9 +45,6 @@ ScreenWindow::ScreenWindow(const DeviceInfo& dev, QWidget* parent) : FramelessWi
     QVariantMap options;
     options.insert("color", QColor(255, 255, 255));
     QIcon screenshotIcon = awesome->icon(fa::fa_solid, fa::fa_camera, options).pixmap(14, 14);
-    QIcon settingsIcon = awesome->icon(fa::fa_solid, fa::fa_bolt, options).pixmap(14, 14);
-    QIcon navIcon = awesome->icon(fa::fa_solid, fa::fa_bars, options).pixmap(14, 14);
-
     QToolBar* toolBar = getTitleBar()->getToolBar();
     toolBar->setFloatable(false); // Don't allow dragging out as independent panel
     toolBar->addSeparator();
