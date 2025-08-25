@@ -45,8 +45,6 @@ bool StreamDecoder::initializeDecoder()
         return false;
     }
 
-    m_codecContext->thread_count = 4;
-
     if (avcodec_open2(m_codecContext, m_codec, nullptr) < 0)
     {
         qWarning() << "Failed to open H264 codec";
