@@ -1,0 +1,167 @@
+@startuml Screen Recording Dataflow Class Diagram
+
+' 屏幕录制数据流类图
+
+' FFmpeg相关类
+class AVCodec {
+}
+
+class AVCodecContext {
+}
+
+class AVFrame {
+}
+
+class AVPacket {
+}
+
+class SwsContext {
+}
+
+' 流解码器
+class StreamDecoder {
+    -const AVCodec* m_codec
+    -AVCodecParserContext* m_parser
+    -AVCodecContext* m_codecContext
+    -AVFrame* m_frame
+    -SwsContext* m_swsContext
+    -AVPacket* m_packet
+    -std::mutex m_mutex
+    -bool m_initialized
+    -bool m_firstFrame
+    +StreamDecoder(QObject* parent)
+    +~StreamDecoder()
+    +bool initialize()
+    +bool isInitialized() const
+    +void reset()
+    +void decode(const QByteArray& h264Data)
+    +frameDecoded(const QImage& image)
+    -bool initializeDecoder()
+    -void cleanup()
+    -QImage convertFrameToImage(const AVFrame* frame)
+}
+
+' 流读取器
+class StreamReader {
+    -DeviceInfo m_device
+    -DeviceConnector m_connector
+    -QMutex m_decoderMutex
+    -bool m_isCapturing
+    -StreamDecoder* m_decoder
+    +StreamReader(const DeviceInfo& deviceInfo, QObject* parent)
+    +void stopCapture()
+    +void startCapture()
+    +frameDecoded(const QImage& frame)
+    +errorOccurred(const QString& msg)
+    -void initializeDecoder()
+    -void initFrame()
+    -void handleDataReceived(const QByteArray& frameData)
+    -void onConnectorConnected()
+    -void onFrameDecoded(const QImage& frame)
+    -void onServerStarted(const QString& serial)
+    -void onServerStopped(const QString& serial)
+    -void onErrorOccurred(const QString& msg)
+}
+
+' 设备连接器
+class DeviceConnector {
+    <<enumeration>>
+    CMD_QUERY_DEVICE_INFO
+    CMD_GET_SCREEN_FRAME
+    CMD_START_SCREEN_CAPTURE
+    CMD_STOP_SCREEN_CAPTURE
+    CMD_EXIT
+    
+    <<enumeration>>
+    PKT_DEVICE_INFO
+    PKT_SCREEN_FRAME
+    PKT_ACK
+    PKT_ERROR
+    PKT_UNKNOWN
+    
+    -QTcpSocket* m_socket
+    -qint32 m_expectedSize
+    -PacketType m_currentPacketType
+    +DeviceConnector(QObject* parent)
+    +void connectToDevice(const QString& host, quint16 port)
+    +void disconnectFromDevice()
+    +void sendCommand(CommandType cmd, const QByteArray& payload)
+    +void queryDeviceInfo()
+    +void startScreenCapture()
+    +void stopScreenCapture()
+    +deviceInfoReceived(const DeviceInfoFull& info)
+    +screenFrameReceived(const QByteArray& frameData)
+    +errorOccurred(const QString& error)
+    +connected()
+    +disconnected()
+    -void processPacket(PacketType type, const QByteArray& data)
+    -DeviceInfoFull parseDeviceInfo(const QByteArray& data)
+    -void onSocketConnected()
+    -void onSocketDisconnected()
+    -void onReadyRead()
+    -void onErrorOccurred(QAbstractSocket::SocketError error)
+}
+
+' 设备代理（用于数据流控制）
+abstract class DeviceProxy {
+    +{abstract} bool startDeviceServer(const QString& serial)
+    +{abstract} bool stopDeviceServer(const QString& serial)
+    +{abstract} bool screenshot(const QString& serial, QByteArray& imageData)
+}
+
+' 设备信息
+class DeviceInfo {
+    +QString serial
+    +QString name
+    +DeviceType type
+    +int width
+    +int height
+    +int forwardPort
+    +double scale
+}
+
+' 完整设备信息
+class DeviceInfoFull {
+    +QString model
+    +QString brand
+    +QString manufacturer
+    +QString marketName
+    +QString osVersion
+    +int apiVersion
+    +int dpi
+    +int screenWidth
+    +int screenHeight
+    +QString cpuArch
+}
+
+' 数据流关系
+StreamReader *-- StreamDecoder : uses >
+StreamReader o-- DeviceConnector : contains >
+StreamReader ..> DeviceInfo : uses >
+DeviceConnector ..> DeviceInfoFull : creates >
+DeviceConnector ..> DeviceInfo : uses >
+StreamDecoder ..> AVCodec : uses >
+StreamDecoder ..> AVCodecContext : uses >
+StreamDecoder ..> AVFrame : uses >
+StreamDecoder ..> AVPacket : uses >
+StreamDecoder ..> SwsContext : uses >
+
+' 数据流序列
+note right of StreamReader
+  1. startCapture() -> 启动设备服务器
+  2. onServerStarted() -> 连接设备
+  3. onConnectorConnected() -> 开始屏幕捕获
+  4. handleDataReceived() -> 接收H264数据
+  5. decode() -> 解码数据
+  6. frameDecoded() -> 发送解码后的帧
+end note
+
+note right of DeviceConnector
+  网络通信协议:
+  - TCP连接设备服务器
+  - 发送控制命令
+  - 接收设备信息和屏幕帧
+  - 处理数据包格式
+end note
+
+@enduml

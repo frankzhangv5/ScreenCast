@@ -1,0 +1,161 @@
+@startuml Device Management Class Diagram
+
+' 设备类型枚举
+enum DeviceType {
+    ANDROID
+    OHOS
+}
+
+' 设备事件枚举
+enum DeviceEvent {
+    INVALID
+    BACK
+    HOME
+    MENU
+    WAKEUP
+    SLEEP
+    ROTATE
+    UNLOCK
+    SHUTDOWN
+    REBOOT
+}
+
+' 基础设备信息结构
+class DeviceInfo {
+    +QString serial
+    +QString name
+    +DeviceType type
+    +int width
+    +int height
+    +int forwardPort
+    +double scale
+    +QString toString()
+}
+
+' 完整设备信息结构
+class DeviceInfoFull {
+    +QString model
+    +QString brand
+    +QString manufacturer
+    +QString marketName
+    +QString osVersion
+    +int apiVersion
+    +int dpi
+    +int screenWidth
+    +int screenHeight
+    +QString cpuArch
+}
+
+' 设备代理抽象基类
+abstract class DeviceProxy {
+    +{abstract} QVector<DeviceInfo> queryDevices()
+    +{abstract} QString deviceModel(const QString& serial)
+    +{abstract} QString deviceName(const QString& serial)
+    +{abstract} QSize deviceResolution(const QString& serial)
+    +{abstract} bool setupDeviceServer(const QString& serial, int forwardPort)
+    +{abstract} bool startDeviceServer(const QString& serial)
+    +{abstract} bool stopDeviceServer(const QString& serial)
+    +{abstract} bool queryDeviceInfo(const QString& serial, DeviceInfo& info)
+    +{abstract} DeviceType deviceType() const
+    +{abstract} bool sendEvent(const DeviceInfo& dev, DeviceEvent eventType)
+    +{abstract} bool sendTouchEvent(const DeviceInfo& dev, QPoint pos)
+    +{abstract} bool sendTextEvent(const DeviceInfo& dev, const QString& text)
+    +{abstract} bool sendSwipeEvent(const DeviceInfo& dev, QPoint start, QPoint end, int duration)
+    +{abstract} bool screenshot(const QString& serial, QByteArray& imageData)
+    +{abstract} bool supportEvent(DeviceEvent eventType) const
+}
+
+' Android设备代理实现
+class AndroidDevice {
+    -QMutex m_mutex
+    -bool m_running
+    +QVector<DeviceInfo> queryDevices() override
+    +QString deviceModel(const QString& serial) override
+    +QString deviceName(const QString& serial) override
+    +QSize deviceResolution(const QString& serial) override
+    +bool setupDeviceServer(const QString& serial, int forwardPort) override
+    +bool startDeviceServer(const QString& serial) override
+    +bool stopDeviceServer(const QString& serial) override
+    +bool queryDeviceInfo(const QString& serial, DeviceInfo& info) override
+    +DeviceType deviceType() const override
+    +bool sendEvent(const DeviceInfo& dev, DeviceEvent eventType) override
+    +bool sendTouchEvent(const DeviceInfo& dev, QPoint pos) override
+    +bool sendTextEvent(const DeviceInfo& dev, const QString& text) override
+    +bool sendSwipeEvent(const DeviceInfo& dev, QPoint start, QPoint end, int duration) override
+    +bool screenshot(const QString& serial, QByteArray& imageData) override
+    +bool supportEvent(DeviceEvent eventType) const override
+}
+
+' OpenHarmony设备代理实现
+class OHOSDevice {
+    -QMutex m_mutex
+    -bool m_running
+    +QVector<DeviceInfo> queryDevices() override
+    +QString deviceModel(const QString& serial) override
+    +QString deviceName(const QString& serial) override
+    +QSize deviceResolution(const QString& serial) override
+    +bool setupDeviceServer(const QString& serial, int forwardPort) override
+    +bool startDeviceServer(const QString& serial) override
+    +bool stopDeviceServer(const QString& serial) override
+    +bool queryDeviceInfo(const QString& serial, DeviceInfo& info) override
+    +DeviceType deviceType() const override
+    +bool sendEvent(const DeviceInfo& dev, DeviceEvent eventType) override
+    +bool sendTouchEvent(const DeviceInfo& dev, QPoint pos) override
+    +bool sendTextEvent(const DeviceInfo& dev, const QString& text) override
+    +bool sendSwipeEvent(const DeviceInfo& dev, QPoint start, QPoint end, int duration) override
+    +bool screenshot(const QString& serial, QByteArray& imageData) override
+    +bool supportEvent(DeviceEvent eventType) const override
+    -bool isScreenOn(const QString& serial)
+}
+
+' 设备连接器
+class DeviceConnector {
+    -QTcpSocket* m_socket
+    -qint32 m_expectedSize
+    -PacketType m_currentPacketType
+    +void connectToDevice(const QString& host, quint16 port)
+    +void disconnectFromDevice()
+    +void sendCommand(CommandType cmd, const QByteArray& payload)
+    +void queryDeviceInfo()
+    +void startScreenCapture()
+    +void stopScreenCapture()
+    +deviceInfoReceived(const DeviceInfoFull& info)
+    +screenFrameReceived(const QByteArray& frameData)
+    +errorOccurred(const QString& error)
+    +connected()
+    +disconnected()
+}
+
+' 设备管理器
+class DeviceManager {
+    -{static} DeviceManager instance
+    -QVector<DeviceProxy*> m_proxies
+    -QVector<DeviceInfo> m_devices
+    -QTimer* m_timer
+    -QMutex m_mutex
+    +QVector<DeviceInfo> devices() const
+    +DeviceInfo* device(const QString& serial) const
+    +DeviceProxy* proxyForType(DeviceType type) const
+    +void scanDevices()
+    +bool renameDevice(const QString& serial, const QString& newName)
+    +bool toggleTopDevice(const QString& serial)
+    +bool isDevicePinned(const QString& serial) const
+    +void clearCache()
+    +void startMonitor()
+    +void stopMonitor()
+    +deviceConnected(const DeviceInfo& info)
+    +deviceDisconnected(const DeviceInfo& info)
+    +deviceListChanged(const QVector<DeviceInfo>& devices)
+}
+
+' 关系定义
+DeviceProxy <|-- AndroidDevice
+DeviceProxy <|-- OHOSDevice
+DeviceManager o-- DeviceProxy : manages >
+DeviceManager o-- DeviceInfo : contains >
+DeviceConnector ..> DeviceInfoFull : uses >
+DeviceConnector ..> DeviceInfo : uses >
+AndroidDevice ..> DeviceInfo : creates >
+OHOSDevice ..> DeviceInfo : creates >
+
+@enduml

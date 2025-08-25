@@ -1,0 +1,121 @@
+@startuml System Architecture Overview
+
+' 系统架构总览图
+
+package "Device Management Layer" {
+    class DeviceManager {
+        +scanDevices()
+        +startMonitor()
+        +stopMonitor()
+        +devices()
+    }
+    
+    class AndroidDevice
+    class OHOSDevice
+    
+    DeviceManager --> AndroidDevice : uses
+    DeviceManager --> OHOSDevice : uses
+}
+
+package "Data Stream Layer" {
+    class StreamReader {
+        +startCapture()
+        +stopCapture()
+    }
+    
+    class StreamDecoder {
+        +decode(h264Data)
+        +frameDecoded(image)
+    }
+    
+    class DeviceConnector {
+        +connectToDevice()
+        +startScreenCapture()
+        +stopScreenCapture()
+    }
+    
+    StreamReader --> StreamDecoder : uses
+    StreamReader --> DeviceConnector : uses
+}
+
+package "UI Presentation Layer" {
+    class MainWindow
+    class DeviceListPage
+    class ScreenWindow
+    class SettingsWindow
+    
+    MainWindow --> DeviceListPage : contains
+    MainWindow --> SettingsWindow : opens
+    DeviceListPage --> ScreenWindow : opens
+}
+
+package "External Dependencies" {
+    package "FFmpeg" {
+        class AVCodec
+        class AVFrame
+        class AVPacket
+    }
+    
+    package "Qt Framework" {
+        class QTcpSocket
+        class QLabel
+        class QListWidget
+    }
+    
+    package "Platform Tools" {
+        class adb
+        class hdc
+    }
+}
+
+' 跨层连接
+DeviceManager --> DeviceListPage : updates
+StreamReader --> ScreenWindow : provides frames
+AndroidDevice --> adb : commands
+OHOSDevice --> hdc : commands
+StreamDecoder --> AVCodec : uses
+DeviceConnector --> QTcpSocket : uses
+ScreenWindow --> QLabel : displays
+
+' 数据流
+note right of DeviceManager
+  设备发现流程：
+  1. 扫描设备 (adb/hdc)
+  2. 获取设备信息
+  3. 建立端口转发
+  4. 启动设备服务器
+  5. 通知UI更新
+end note
+
+note right of StreamReader
+  屏幕捕获流程：
+  1. 连接设备服务器
+  2. 发送开始捕获命令
+  3. 接收H264数据流
+  4. FFmpeg解码
+  5. 转换为QImage
+  6. 更新UI显示
+end note
+
+note right of MainWindow
+  用户交互流程：
+  1. 显示设备列表
+  2. 选择设备连接
+  3. 打开屏幕窗口
+  4. 实时查看屏幕
+  5. 执行远程控制
+end note
+
+' 配置和设置
+class Settings {
+    +load()
+    +save()
+    +getProxyEnabled()
+    +setProxyEnabled()
+}
+
+Settings --> DeviceManager : configures
+Settings --> StreamReader : configures
+Settings --> MainWindow : configures
+
+@enduml

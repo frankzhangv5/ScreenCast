@@ -1,0 +1,197 @@
+@startuml UI Display Class Diagram
+
+' 基础窗口框架
+class FramelessWindow {
+    -QVBoxLayout* mainLayout
+    -TitleBar* titleBar
+    -QWidget* page
+    -StatusBar* statusBar
+    +FramelessWindow(QWidget* parent, int width)
+    +QVBoxLayout* getMainLayout()
+    +TitleBar* getTitleBar() const
+    +QWidget* getPage() const
+    +StatusBar* getStatusBar() const
+    +void sendSystemNotification(const QString& title, const QString& message, int timeout)
+}
+
+' 主窗口
+class MainWindow {
+    +MainWindow(QWidget* parent)
+    ~MainWindow()
+    -void onDeviceConnected(const DeviceInfo& dev)
+    -void onDeviceDisconnected(const DeviceInfo& dev)
+    -void showEvent(QShowEvent* event)
+    -void closeEvent(QCloseEvent* event)
+}
+
+' 设备列表页面
+class DeviceListPage {
+    -QListWidget* listWidget
+    -QMenu* contextMenu
+    -QListWidgetItem* contextItem
+    +DeviceListPage(QWidget* parent)
+    -void updateDeviceList(const QVector<DeviceInfo>& devices)
+    -void showContextMenu(const QPoint& pos)
+    -void renameDevice()
+    -void toggleTopDevice()
+    -void setupContextMenu()
+    -QMenu* createContextMenu()
+}
+
+' 屏幕显示窗口
+class ScreenWindow {
+    -DeviceInfo m_device
+    -StreamReader* m_streamReader
+    -QLabel* screenLabel
+    -bool m_isDragging
+    -qint64 m_pressTime
+    -qint64 m_lastWheelTime
+    -int m_accumulatedWheelDelta
+    -QPoint m_lastMousePos
+    -QFutureWatcher<QByteArray>* m_screenshotWatcher
+    +ScreenWindow(const DeviceInfo& dev, QWidget* parent)
+    -void updateVideoFrame(const QImage& frame)
+    -void onErrorOccurred(const QString& msg)
+    -void onScreenshotCompleted()
+    -QMenu* createNavMenu()
+    -QMenu* createShortcutMenu()
+    -void showContextMenu(const QPoint& globalPos)
+    -QMenu* createContextMenu()
+    -void takeScreenshot()
+    -QString saveScreenshotToFile(const QByteArray& imageData)
+    -void showEvent(QShowEvent* event)
+    -void closeEvent(QCloseEvent* event)
+    -void mousePressEvent(QMouseEvent* event)
+    -void wheelEvent(QWheelEvent* event)
+    -void mouseMoveEvent(QMouseEvent* event)
+    -void mouseReleaseEvent(QMouseEvent* event)
+}
+
+' 设置窗口
+class SettingsWindow {
+    -QLabel* currentVersionLabel
+    -QLabel* updateStatusLabel
+    -QLabel* fileMd5Label
+    -QLabel* fileSizeLabel
+    -QLabel* updateStatusIcon
+    -UpdateChecker* updateChecker
+    -QThread* updateThread
+    +SettingsWindow(QWidget* parent)
+    -void onUpdateCheckFinished(bool hasUpdate, const QString& version, const QString& downloadUrl, const qint64& fileSize, const QString& fileMd5, const QString& errorMessage)
+    -void setupMainLayout()
+    -QGroupBox* createUpdateSettingsGroup()
+    -QGroupBox* createLogSettingsGroup()
+    -QGroupBox* createDriverSettingsGroup()
+    -QGroupBox* createMediaSettingsGroup()
+    -QGroupBox* createLanguageSettingsGroup()
+    -QGroupBox* createDonationSettingsGroup()
+    -QGroupBox* createResetSettingsGroup()
+    -void applyStylesheet()
+    -void startUpdateCheck()
+}
+
+' 设备项目组件
+class DeviceItem {
+    -DeviceInfo m_info
+    +DeviceItem(const DeviceInfo& dev, QWidget* parent)
+    +static QIcon iconForType(DeviceType type)
+    +const DeviceInfo& deviceInfo() const
+}
+
+' 标题栏
+class TitleBar {
+    +TitleBar(QWidget* parent)
+    +void setIconText(const QString& text)
+    +QToolBar* getToolBar()
+}
+
+' 状态栏
+class StatusBar {
+    +StatusBar(QWidget* parent)
+    +void setStatus(const QString& message)
+}
+
+' 托盘管理器
+class TrayManager {
+    +{static} TrayManager& instance()
+    +void showNotification(const QString& title, const QString& message, int timeout)
+    +void showMessage(const QString& title, const QString& message)
+}
+
+' 设备信息
+class DeviceInfo {
+    +QString serial
+    +QString name
+    +DeviceType type
+    +int width
+    +int height
+    +int forwardPort
+    +double scale
+}
+
+' 数据流类
+class StreamReader {
+    +StreamReader(const DeviceInfo& deviceInfo, QObject* parent)
+    +void startCapture()
+    +void stopCapture()
+    +frameDecoded(const QImage& frame)
+    +errorOccurred(const QString& msg)
+}
+
+' 继承关系
+MainWindow --|> FramelessWindow
+DeviceListPage --|> QWidget
+ScreenWindow --|> FramelessWindow
+SettingsWindow --|> FramelessWindow
+DeviceItem --|> QWidget
+
+' 组合关系
+FramelessWindow o-- TitleBar : has >
+FramelessWindow o-- StatusBar : has >
+FramelessWindow o-- QWidget : has >
+MainWindow o-- DeviceListPage : contains >
+ScreenWindow o-- StreamReader : uses >
+ScreenWindow o-- QLabel : displays >
+DeviceListPage o-- QListWidget : contains >
+DeviceListPage o-- DeviceItem : uses >
+
+' 依赖关系
+MainWindow ..> DeviceInfo : uses >
+ScreenWindow ..> DeviceInfo : uses >
+DeviceItem ..> DeviceInfo : contains >
+DeviceListPage ..> DeviceInfo : displays >
+
+' UI交互流程
+note right of MainWindow
+  主窗口功能：
+  1. 显示设备列表
+  2. 处理设备连接/断开通知
+  3. 提供导航和设置入口
+end note
+
+note right of DeviceListPage
+  设备列表功能：
+  1. 展示所有连接的设备
+  2. 支持右键菜单操作
+  3. 设备重命名和置顶
+  4. 空状态提示
+end note
+
+note right of ScreenWindow
+  屏幕显示功能：
+  1. 实时显示设备屏幕
+  2. 支持触摸和手势操作
+  3. 截图功能
+  4. 快捷操作菜单
+end note
+
+' 样式和主题
+note bottom of FramelessWindow
+  窗口框架特性：
+  - 无边框窗口
+  - 自定义标题栏
+  - 状态栏显示
+  - 系统通知支持
+end note
+
+@enduml
