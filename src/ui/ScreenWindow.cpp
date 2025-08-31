@@ -226,27 +226,30 @@ QMenu* ScreenWindow::createNavMenu()
 
     if (proxy->supportEvent(DeviceEvent::HOME))
     {
-        navMenu->addAction(homeIcon, tr("Home"), this, [this]() {
+         QAction *homeAction = navMenu->addAction(homeIcon, tr("Home"), this, [this]() {
             DeviceProxy* proxy = DeviceManager::instance().proxyForType(m_device.type);
             if (proxy)
                 proxy->sendEvent(m_device, DeviceEvent::HOME);
         });
+        homeAction->setIconVisibleInMenu(true);
     }
     if (proxy->supportEvent(DeviceEvent::BACK))
     {
-        navMenu->addAction(backIcon, tr("Back"), this, [this]() {
+        QAction *backAction = navMenu->addAction(backIcon, tr("Back"), this, [this]() {
             DeviceProxy* proxy = DeviceManager::instance().proxyForType(m_device.type);
             if (proxy)
                 proxy->sendEvent(m_device, DeviceEvent::BACK);
         });
+        backAction->setIconVisibleInMenu(true);
     }
     if (proxy->supportEvent(DeviceEvent::MENU))
     {
-        navMenu->addAction(menuIcon, tr("Menu"), this, [this]() {
+        QAction *menuAction = navMenu->addAction(menuIcon, tr("Menu"), this, [this]() {
             DeviceProxy* proxy = DeviceManager::instance().proxyForType(m_device.type);
             if (proxy)
                 proxy->sendEvent(m_device, DeviceEvent::MENU);
         });
+        menuAction->setIconVisibleInMenu(true);
     }
     navMenu->setStyleSheet(R"(
                 QMenu {
@@ -295,31 +298,35 @@ QMenu* ScreenWindow::createShortcutMenu()
 
     if (proxy->supportEvent(DeviceEvent::WAKEUP))
     {
-        shortcutMenu->addAction(wakeupIcon, tr("Wake"), this, [this]() {
+        QAction *wakeAction = shortcutMenu->addAction(wakeupIcon, tr("Wake"), this, [this]() {
             DeviceProxy* proxy = DeviceManager::instance().proxyForType(m_device.type);
             if (proxy)
                 proxy->sendEvent(m_device, DeviceEvent::WAKEUP);
         });
+        wakeAction->setIconVisibleInMenu(true);
+
     }
     if (proxy->supportEvent(DeviceEvent::SLEEP))
     {
-        shortcutMenu->addAction(sleepIcon, tr("Sleep"), this, [this]() {
+        QAction *sleepAction = shortcutMenu->addAction(sleepIcon, tr("Sleep"), this, [this]() {
             DeviceProxy* proxy = DeviceManager::instance().proxyForType(m_device.type);
             if (proxy)
                 proxy->sendEvent(m_device, DeviceEvent::SLEEP);
         });
+        sleepAction->setIconVisibleInMenu(true);
     }
     if (proxy->supportEvent(DeviceEvent::ROTATE))
     {
-        shortcutMenu->addAction(rotateIcon, tr("Rotate"), this, [this]() {
+        QAction *rotateAction = shortcutMenu->addAction(rotateIcon, tr("Rotate"), this, [this]() {
             DeviceProxy* proxy = DeviceManager::instance().proxyForType(m_device.type);
             if (proxy)
                 proxy->sendEvent(m_device, DeviceEvent::ROTATE);
         });
+        rotateAction->setIconVisibleInMenu(true);
     }
     if (proxy->supportEvent(DeviceEvent::UNLOCK))
     {
-        shortcutMenu->addAction(unlockIcon, tr("Unlock"), this, [this]() {
+        QAction *unlockAction = shortcutMenu->addAction(unlockIcon, tr("Unlock"), this, [this]() {
             DeviceProxy* proxy = DeviceManager::instance().proxyForType(m_device.type);
             if (proxy)
             {
@@ -327,23 +334,26 @@ QMenu* ScreenWindow::createShortcutMenu()
                 proxy->sendEvent(m_device, DeviceEvent::UNLOCK);
             }
         });
+        unlockAction->setIconVisibleInMenu(true);
     }
     shortcutMenu->addSeparator();
     if (proxy->supportEvent(DeviceEvent::REBOOT))
     {
-        shortcutMenu->addAction(rebootIcon, tr("Reboot"), this, [this]() {
+        QAction *rebootAction = shortcutMenu->addAction(rebootIcon, tr("Reboot"), this, [this]() {
             DeviceProxy* proxy = DeviceManager::instance().proxyForType(m_device.type);
             if (proxy)
                 proxy->sendEvent(m_device, DeviceEvent::REBOOT);
         });
+        rebootAction->setIconVisibleInMenu(true);
     }
     if (proxy->supportEvent(DeviceEvent::SHUTDOWN))
     {
-        shortcutMenu->addAction(shutdownIcon, tr("Shutdown"), this, [this]() {
+        QAction *shutdownAction = shortcutMenu->addAction(shutdownIcon, tr("Shutdown"), this, [this]() {
             DeviceProxy* proxy = DeviceManager::instance().proxyForType(m_device.type);
             if (proxy)
                 proxy->sendEvent(m_device, DeviceEvent::SHUTDOWN);
         });
+        shutdownAction->setIconVisibleInMenu(true);
     }
     shortcutMenu->setStyleSheet(R"(
                 QMenu {
@@ -394,6 +404,7 @@ QMenu* ScreenWindow::createContextMenu()
 
     // Screenshot action
     QAction* screenshotAction = contextMenu->addAction(screenshotIcon, tr("Screenshot"));
+    screenshotAction->setIconVisibleInMenu(true);
     connect(screenshotAction, &QAction::triggered, this, &ScreenWindow::takeScreenshot);
 
     contextMenu->addSeparator();
@@ -402,13 +413,15 @@ QMenu* ScreenWindow::createContextMenu()
     QMenu* navSubmenu = createNavMenu();
     navSubmenu->setTitle(tr("Navigation"));
     navSubmenu->setIcon(navIcon);
-    contextMenu->addMenu(navSubmenu);
+    QAction* navAction = contextMenu->addMenu(navSubmenu);
+    navAction->setIconVisibleInMenu(true);
 
     // Shortcuts submenu
     QMenu* shortcutSubmenu = createShortcutMenu();
     shortcutSubmenu->setTitle(tr("Shortcuts"));
     shortcutSubmenu->setIcon(shortcutIcon);
-    contextMenu->addMenu(shortcutSubmenu);
+    QAction* shortcutAction = contextMenu->addMenu(shortcutSubmenu);
+    shortcutAction->setIconVisibleInMenu(true);
 
     // Apply styling
     contextMenu->setStyleSheet(R"(

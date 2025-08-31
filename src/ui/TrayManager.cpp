@@ -62,9 +62,11 @@ void TrayManager::setupTrayMenu()
 #endif
     QIcon showIcon = awesome->icon(fa::fa_solid, fa::fa_home, opts).pixmap(14, 14);
     QAction* showAction = trayMenu->addAction(showIcon, tr("Show"));
+    showAction->setIconVisibleInMenu(true);
 
     QIcon exitIcon = awesome->icon(fa::fa_solid, fa::fa_sign_out, opts).pixmap(14, 14);
     QAction* quitAction = trayMenu->addAction(exitIcon, tr("Exit"));
+    quitAction->setIconVisibleInMenu(true);
     connect(showAction, &QAction::triggered, this, &TrayManager::onShowMainWindow);
     connect(quitAction, &QAction::triggered, this, &TrayManager::onQuit);
 

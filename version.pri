@@ -56,6 +56,4 @@ macx {
 
     # macOS specific Bundle settings
     ICON = $$PWD/res/app_icons/macos_icon.icns
-
-    QMAKE_INFO_PLIST = $$PWD/pack/Info.plist
 }
