@@ -1,3 +1,3 @@
-[submodule "thirdparty/QtAwesome"]
-	path = thirdparty/QtAwesome
+[submodule "app/lib/QtAwesome"]
+	path = app/lib/QtAwesome
 	url = https://github.com/gamecreature/QtAwesome.git

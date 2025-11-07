@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/ohos">
+        <file alias="icon">res/icons/ohos.svg</file>
+        <file alias="icon_connected">res/icons/ohos.svg</file>
+        <file alias="icon_disconnected">res/icons/ohos.svg</file>
+
+        <file alias="server">res/server/mirror_server</file>
+    </qresource>
+</RCC>

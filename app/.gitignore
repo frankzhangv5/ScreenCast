@@ -1,0 +1,32 @@
+# Build directories
+build/
+
+# Qt build files
+*.pro.user
+*.pro.user.*
+
+# Compiled object files
+*.o
+*.obj
+
+# Generated files
+moc_*
+ui_*
+qrc_*
+
+# Debug and release directories
+debug/
+release/
+
+# VS Code settings
+.vscode/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Log files
+debug_log.txt
+
+# Executable files
+*.exe

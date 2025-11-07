@@ -70,14 +70,13 @@ jobs:
       shell: powershell
       run: |
         echo $env:Path
-        cd pack
-        ./windows.ps1
+        python build.py --configuration Release --package
 
     - name: Upload Windows Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: windows-package
-        path: pack/installer/*-Setup.exe
+        path: pack/installer/*.*
         retention-days: 30
     
     - name: Upload Windows to Release
@@ -85,6 +84,21 @@ jobs:
       run: |
         # Find the installer file
         $installerFile = Get-ChildItem -Path "pack/installer" -Filter "*-Setup.exe" | Select-Object -First 1
+        if ($installerFile) {
+          Write-Host "Uploading $($installerFile.FullName) to release..."
+          gh release upload ${{ github.event.release.tag_name }} "$($installerFile.FullName)" --clobber
+        } else {
+          Write-Error "No installer file found!"
+          exit 1
+        }
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
+    - name: Upload Portable Windows Archive to Release
+      if: github.event_name == 'release'
+      run: |
+        # Find the installer file
+        $installerFile = Get-ChildItem -Path "pack/installer" -Filter "*.zip" | Select-Object -First 1
         if ($installerFile) {
           Write-Host "Uploading $($installerFile.FullName) to release..."
           gh release upload ${{ github.event.release.tag_name }} "$($installerFile.FullName)" --clobber
@@ -162,12 +176,11 @@ jobs:
           make -j$(nproc)
           make install
 
-          cd /workspace/pack
-          chmod +x linux.sh
           export Qt6_DIR=$QT_INSTALL_DIR/6.9.1/gcc_64
           export PKG_CONFIG_PATH=/workspace/ffmpeg-static/lib/pkgconfig:$PKG_CONFIG_PATH
           export APPIMAGE_EXTRACT_AND_RUN=1
-          ./linux.sh
+          cd /workspace
+          python3 build.py --configuration Release --package
 
     - name: Upload Linux Artifacts
       uses: actions/upload-artifact@v4
@@ -241,9 +254,7 @@ jobs:
         FFMPEG_DIR: ${{ env.FFMPEG_DIR }}
         PKG_CONFIG_PATH: ${{ env.PKG_CONFIG_PATH }}
       run: |
-        cd pack
-        chmod +x macos.sh
-        ./macos.sh
+        python3 build.py --configuration Release --package
     
     - name: Upload macOS ARM64 Artifacts
       uses: actions/upload-artifact@v4
@@ -300,9 +311,7 @@ jobs:
         FFMPEG_DIR: ${{ env.FFMPEG_DIR }}
         PKG_CONFIG_PATH: ${{ env.PKG_CONFIG_PATH }}
       run: |
-        cd pack
-        chmod +x macos.sh
-        ./macos.sh
+        python3 build.py --configuration Release --package
     
     - name: Upload macOS x86_64 Artifacts
       uses: actions/upload-artifact@v4

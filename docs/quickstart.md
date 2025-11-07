@@ -32,23 +32,23 @@
 
    **Windows**:
    ```bash
-   # 下载 ScreenCast-Setup-v1.0.0.exe
+   # 下载 ScreenCast-Setup-${version}.exe
    # 双击运行安装程序
    # 按照向导完成安装
    ```
 
    **macOS**:
    ```bash
-   # 下载 ScreenCast-v1.0.0.dmg
+   # 下载 ScreenCast-${version}.dmg
    # 双击挂载 DMG 文件
    # 将 ScreenCast 拖拽到 Applications 文件夹
    ```
 
    **Linux**:
    ```bash
-   # 下载 ScreenCast-v1.0.0.AppImage
-   chmod +x ScreenCast-v1.0.0.AppImage
-   ./ScreenCast-v1.0.0.AppImage
+   # 下载 ScreenCast-${version}.AppImage
+   chmod +x ScreenCast-${version}.AppImage
+   ./ScreenCast-${version}.AppImage
    ```
 
 ### 方式二：从源码编译

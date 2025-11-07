@@ -1,0 +1,22 @@
+<RCC>
+  <qresource prefix="/">
+    <file>theme/Green.qss</file>
+    <file>icon/check_box_checked/#008d4e.svg</file>
+    <file>icon/check_box_checked/#808080.svg</file>
+    <file>icon/check_box_unchecked/#808080.svg</file>
+    <file>icon/check_box_unchecked/#008d4e.svg</file>
+    <file>icon/check_box_checked/#f5f5f5.svg</file>
+    <file>icon/check_box_unchecked/#f5f5f5.svg</file>
+    <file>icon/chevron_down/#008d4e.svg</file>
+    <file>icon/ellipsis_vertical/#9e9e9e.svg</file>
+    <file>icon/ellipsis/#9e9e9e.svg</file>
+    <file>icon/triangle_right/#f5f5f5.svg</file>
+    <file>icon/splash/#ffffff.svg</file>
+    <file>icon/logo/#ffffff.svg</file>
+    <file>icon/device/#008d4e.svg</file>
+    <file>icon/donate/alipay.png</file>
+    <file>icon/donate/wechatpay.png</file>
+    <file>icon/tray/tray.png</file>
+    <file>app_icons/windows_icon.ico</file>
+  </qresource>
+</RCC>

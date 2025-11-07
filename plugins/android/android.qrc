@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/android">
+        <file alias="icon">res/icons/android.svg</file>
+        <file alias="icon_connected">res/icons/android.svg</file>
+        <file alias="icon_disconnected">res/icons/android.svg</file>
+
+        <file alias="server">res/server/mirror_server</file>
+    </qresource>
+</RCC>

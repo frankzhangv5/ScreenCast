@@ -3,11 +3,12 @@
 # ======================= #
 
 # 构建系统生成的目录
+dist/
 build/
 /bin/
 obj/
 __pycache__/
-
+pack/installer/
 # Qt Creator生成的构建目录
 *.user
 *.autosave
