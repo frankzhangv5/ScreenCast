@@ -87,7 +87,7 @@ def find_qt_dir():
             return str(path)
 
     # 检查环境变量
-    qt_dir = os.environ.get('QTDIR')
+    qt_dir = os.environ.get('Qt6_DIR')
     if qt_dir:
         qmake_path = Path(qt_dir) / "bin" / qmake_name
         if qmake_path.exists():
@@ -109,6 +109,10 @@ def find_compiler_path(qt_dir):
 
 def find_mingw_path(qt_dir):
     """查找MinGW工具链路径 (Windows专用)"""
+    mingw_make_path = shutil.which('mingw32-make.exe')
+    if mingw_make_path:
+        return str(Path(mingw_make_path).parent.parent)
+
     if not qt_dir or not IS_WINDOWS:
         return None
     

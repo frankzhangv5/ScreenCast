@@ -13,3 +13,39 @@ win32 {
     PRE_TARGETDEPS += ffmepegdllcopy
     QMAKE_EXTRA_TARGETS += FFMPEG_COPY_DLLS
 }
+
+
+unix:!macx {
+    # Linux configuration
+    CONFIG += static link_pkgconfig
+    PKGCONFIG += libavcodec libavformat libswscale libavutil
+}
+
+macx {
+    # Try to use FFMPEG_DIR environment variable first
+    !isEmpty(FFMPEG_DIR) {
+        INCLUDEPATH += $$FFMPEG_DIR/include
+        LIBS += -L$$FFMPEG_DIR/lib
+    } else {
+        # Fallback to common Homebrew paths
+        exists(/opt/homebrew/opt/ffmpeg@7/include) {
+            INCLUDEPATH += /opt/homebrew/opt/ffmpeg@7/include
+            LIBS += -L/opt/homebrew/opt/ffmpeg@7/lib
+        } else: exists(/usr/local/opt/ffmpeg@7/include) {
+            INCLUDEPATH += /usr/local/opt/ffmpeg@7/include
+            LIBS += -L/usr/local/opt/ffmpeg@7/lib
+        } else {
+            # System default paths
+            INCLUDEPATH += /usr/local/include
+            LIBS += -L/usr/local/lib
+        }
+    }
+    
+    LIBS += -lavcodec \
+            -lavformat \
+            -lswscale \
+            -lavutil
+
+    # Disable symlink generation (reduce deployment issues)
+    CONFIG += absolute_library_soname
+}
