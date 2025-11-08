@@ -140,7 +140,7 @@ jobs:
           echo 'eval "$(pyenv init -)"' >> ~/.bashrc
 
           # 重新加载配置
-          source ~/.bashrc
+          . ~/.bashrc
           # 安装 Python 3.13
           pyenv install 3.13.0
           # 设置为全局版本

@@ -741,6 +741,13 @@ def package_linux(app_dist_dir, app_target_name, script_dir, build_type):
     """Linux平台打包"""
     logi("Creating Linux package...")
 
+    # 检查是否在Linux环境
+    if not IS_LINUX:
+        logi(
+            "Skipping Linux package creation in non-Linux environment. Please run on Linux for proper packaging."
+        )
+        return False
+
     # 读取版本信息
     version = get_version_from_file(script_dir)
 
@@ -767,25 +774,37 @@ def package_linux(app_dist_dir, app_target_name, script_dir, build_type):
     # 创建AppDir结构
     appdir = pack_dir / "AppDir"
     if appdir.exists():
+        logi(f"Removing existing AppDir: {appdir}")
         shutil.rmtree(appdir)
     appdir.mkdir(parents=True, exist_ok=True)
 
     # 创建必要的目录结构
     (appdir / "usr" / "bin").mkdir(parents=True, exist_ok=True)
     (appdir / "usr" / "share" / "applications").mkdir(parents=True, exist_ok=True)
+    (appdir / "usr" / "share" / "icons" / "hicolor" / "256x256" / "apps").mkdir(
+        parents=True, exist_ok=True
+    )
 
     # 复制可执行文件
+    logi(
+        f"Copying executable from {app_dist_dir / app_target_name} to {appdir / 'usr' / 'bin'}"
+    )
     shutil.copy2(app_dist_dir / app_target_name, appdir / "usr" / "bin")
+
+    # 设置可执行权限
+    os.chmod(appdir / "usr" / "bin" / app_target_name, 0o755)
 
     # 复制desktop文件
     desktop_file = pack_dir / "app.desktop"
     if desktop_file.exists():
+        logi(f"Copying desktop file from {desktop_file}")
         shutil.copy2(
             desktop_file,
             appdir / "usr" / "share" / "applications" / "ScreenCast.desktop",
         )
     else:
         # 创建默认desktop文件
+        logi("Creating default desktop file")
         with open(
             appdir / "usr" / "share" / "applications" / "ScreenCast.desktop", "w"
         ) as f:
@@ -802,7 +821,34 @@ Categories=Utility;Graphics;
 """
             )
 
+    # 复制图标文件
+    # 尝试从多个可能的位置查找图标
+    icon_path = None
+    possible_icon_paths = [script_dir / "app" / "res" / "app_icons" / "linux_icon.png"]
+
+    for path in possible_icon_paths:
+        if path.exists():
+            icon_path = path
+            break
+
+    if icon_path:
+        logi(f"Copying icon from {icon_path}")
+        shutil.copy2(
+            icon_path,
+            appdir
+            / "usr"
+            / "share"
+            / "icons"
+            / "hicolor"
+            / "256x256"
+            / "apps"
+            / "ScreenCast.png",
+        )
+    else:
+        logw("No icon file found. App will use default icon.")
+
     # 创建AppRun脚本
+    logi("Creating AppRun script")
     apprun_content = """
 #!/bin/bash
 
@@ -831,11 +877,118 @@ exec "${HERE}/usr/bin/ScreenCast" "$@"
         f.write(apprun_content)
     os.chmod(apprun_path, 0o755)
 
-    logi(
-        "Skipping Linux package creation in Windows environment. Please run on Linux for proper packaging."
-    )
-    logi("For Linux packaging, use the linux.sh script in the pack directory.")
-    return False
+    # 复制Qt插件
+    logi("Copying Qt plugins")
+    qt_plugins_dir = app_dist_dir / "plugins"
+    if qt_plugins_dir.exists():
+        shutil.copytree(qt_plugins_dir, appdir / "usr" / "plugins", dirs_exist_ok=True)
+    else:
+        logw(f"Qt plugins directory not found at {qt_plugins_dir}")
+
+    # 创建符号链接
+    logi("Creating icon symlink")
+    try:
+        # 在AppDir根目录创建图标链接
+        os.symlink(
+            "usr/share/icons/hicolor/256x256/apps/ScreenCast.png",
+            appdir / "ScreenCast.png",
+        )
+        # 在AppDir根目录创建desktop文件链接
+        os.symlink(
+            "usr/share/applications/ScreenCast.desktop", appdir / "ScreenCast.desktop"
+        )
+    except Exception as e:
+        logw(f"Failed to create symlinks: {e}")
+
+    # 执行linuxdeployqt
+    logi("Running linuxdeployqt to deploy Qt dependencies")
+    try:
+        desktop_path = appdir / "usr" / "share" / "applications" / "ScreenCast.desktop"
+        subprocess.run(
+            [
+                str(linuxdeploy_tool),
+                str(desktop_path),
+                "-appimage",
+                "-qmake=qmake",
+                "-bundle-non-qt-libs",
+                "-no-translations",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except subprocess.CalledProcessError as e:
+        loge(f"linuxdeployqt failed with error: {e.stderr}")
+        return False
+    except Exception as e:
+        loge(f"Error running linuxdeployqt: {e}")
+        return False
+
+    # 删除系统运行库，避免在其他Linux发行版上运行报错
+    logi("Removing system libraries to ensure cross-distribution compatibility")
+    try:
+        # 定义要删除的系统库列表
+        system_libs = [
+            "libc.so.6",
+            "libm.so.6",
+            "libpthread.so.0",
+            "libdl.so.2",
+            "librt.so.1",
+            "libgcc_s.so.1",
+            "libstdc++.so.6",
+            "ld-linux-x86-64.so.2",
+            "libGL.so.1",
+            "libX11.so.6",
+            "libXext.so.6",
+            "libXrender.so.1",
+            "libfontconfig.so.1",
+            "libfreetype.so.6",
+            "libz.so.1",
+        ]
+
+        # 遍历并删除系统库
+        lib_dir = appdir / "usr" / "lib"
+        if lib_dir.exists():
+            for lib_name in system_libs:
+                lib_path = lib_dir / lib_name
+                if lib_path.exists():
+                    # 先检查是否是符号链接
+                    if lib_path.is_symlink():
+                        logi(f"Removing symlink: {lib_path}")
+                        lib_path.unlink()
+                    elif lib_path.is_file():
+                        logi(f"Removing system library: {lib_path}")
+                        lib_path.unlink()
+    except Exception as e:
+        loge(f"Error removing system libraries: {e}")
+        # 继续执行，不因为删除库失败而中断打包过程
+
+    # 执行appimagetool生成AppImage
+    logi("Generating AppImage")
+    try:
+        # 创建release目录
+        release_dir = pack_dir / "release"
+        release_dir.mkdir(parents=True, exist_ok=True)
+
+        # 生成AppImage文件名
+        appimage_name = f"ScreenCast-v{version}-linux-{arch_name}.AppImage"
+        appimage_path = release_dir / appimage_name
+
+        result = subprocess.run(
+            [str(appimagetool), str(appdir), str(appimage_path)],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+
+        logi(f"AppImage created successfully: {appimage_path}")
+        return True
+    except subprocess.CalledProcessError as e:
+        loge(f"appimagetool failed with error: {e.stderr}")
+        return False
+    except Exception as e:
+        loge(f"Error generating AppImage: {e}")
+        return False
 
 
 def package_macos(app_dist_dir, app_target_name, script_dir, build_type):
