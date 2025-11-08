@@ -111,8 +111,9 @@ jobs:
 
 
   build-linux:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     permissions:
+      packages: write
       contents: write
     steps:
     - uses: actions/checkout@v4

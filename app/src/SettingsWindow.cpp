@@ -757,7 +757,7 @@ void SettingsWindow::checkForUpdates()
     m_updateInfoLabel->setText(tr("Checking for updates..."));
 
     // 发送网络请求检查更新
-    QNetworkRequest request(QUrl(App::UPDATE_URL));
+    QNetworkRequest request((QUrl(App::UPDATE_URL)));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     m_networkManager->get(request);
 }
