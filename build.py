@@ -29,15 +29,17 @@ def logd(message):
     """打印默认颜色日志"""
     print(f"{RESET}{message}")
 
-
 def logi(message):
     """打印绿色信息日志"""
     print(f"{GREEN}{message}{RESET}")
 
-
 def loge(message):
     """打印红色错误日志"""
     print(f"{RED}{message}{RESET}")
+
+def logw(message):
+    """打印警告信息日志"""
+    print(f"{RESET}[WARNING] {message}")
 
 
 def find_qt_dir():
