@@ -861,7 +861,10 @@ def package_macos(app_dist_dir, app_target_name, script_dir, build_type):
         )
 
         # 应用程序名称和路径
-        app_name = f"{app_target_name}.app"
+        if app_target_name.endswith(".app"):
+            app_name = app_target_name
+        else:
+            app_name = f"{app_target_name}.app"
         app_path = Path(app_dist_dir) / app_name
 
         if not app_path.exists():
@@ -893,8 +896,9 @@ def package_macos(app_dist_dir, app_target_name, script_dir, build_type):
             loge("Qt directory not found")
             return False
 
-        # 设置DMG文件名
-        dmg_name = f"{app_target_name}-{version}-{arch_name}.dmg"
+        # 设置DMG文件名 - 确保不包含.app扩展名
+        base_name = app_target_name.replace(".app", "")
+        dmg_name = f"{base_name}-{version}-{arch_name}.dmg"
         dmg_path = Path(app_dist_dir).parent / dmg_name
 
         # 创建临时目录用于构建DMG内容
@@ -927,7 +931,7 @@ def package_macos(app_dist_dir, app_target_name, script_dir, build_type):
                     "hdiutil",
                     "create",
                     "-volname",
-                    f"{app_target_name}",
+                    f"{base_name}",
                     "-srcfolder",
                     str(temp_dmg_dir),
                     "-ov",
