@@ -163,10 +163,11 @@ QString PluginManager::getPluginDirectory() const
         }
 
         // 检查可执行文件是否在usr/bin目录中（标准AppImage结构）
-        if (appDir.dirName() == "bin" && appDir.parent().dirName() == "usr")
+        QDir parentDir = appDir;
+        if (appDir.dirName() == "bin" && parentDir.cdUp() && parentDir.dirName() == "usr")
         {
             // 在AppImage标准结构中，插件位于usr/plugins
-            return appDir.parent().absoluteFilePath("plugins");
+            return parentDir.absoluteFilePath("plugins");
         }
 
         // 备选方案：相对于可执行文件的plugins目录
