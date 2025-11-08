@@ -144,6 +144,40 @@ QString PluginManager::getPluginDirectory() const
     }
     return appDir.absolutePath();
 #else
-    return QString("/usr/lib/%1/plugins").arg(QApplication::applicationName());
+    // 检查是否在AppImage环境中运行
+    const char* appImageEnv = qgetenv("APPIMAGE").constData();
+    const char* argv0Env = qgetenv("ARGV0").constData();
+    const char* qtPluginPath = qgetenv("QT_QPA_PLATFORM_PLUGIN_PATH").constData();
+
+    // 检查是否是AppImage环境
+    bool isAppImage = appImageEnv || (argv0Env && QString(argv0Env).contains(".AppImage")) ||
+                      appDir.absolutePath().contains(".AppImage");
+
+    // 如果是AppImage环境，使用与打包脚本一致的插件路径结构
+    if (isAppImage)
+    {
+        // 首先尝试使用QT_QPA_PLATFORM_PLUGIN_PATH环境变量的父目录
+        if (qtPluginPath && QDir(QString(qtPluginPath)).exists())
+        {
+            return QString(qtPluginPath);
+        }
+
+        // 检查可执行文件是否在usr/bin目录中（标准AppImage结构）
+        if (appDir.dirName() == "bin" && appDir.parent().dirName() == "usr")
+        {
+            // 在AppImage标准结构中，插件位于usr/plugins
+            return appDir.parent().absoluteFilePath("plugins");
+        }
+
+        // 备选方案：相对于可执行文件的plugins目录
+        appDir.cd("plugins");
+        if (appDir.exists())
+        {
+            return appDir.absolutePath();
+        }
+    }
+
+    // 常规Linux安装的路径
+    return QString("/usr/lib/%1/plugins").arg(QCoreApplication::applicationName());
 #endif
 }
