@@ -131,7 +131,10 @@ jobs:
           export DEBIAN_FRONTEND=noninteractive
           apt-get update
           apt-get install -y software-properties-common
+          # 安装Python编译依赖和aqtinstall运行所需的库
           apt-get install -y curl git libgl1-mesa-dev libxkbcommon-x11-0 python3-pip
+          # Python编译必要的开发库
+          apt-get install -y build-essential zlib1g-dev libssl-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev
           curl https://pyenv.run | bash
 
           # 配置环境变量（使用sh兼容语法）
@@ -161,9 +164,6 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install aqtinstall
 
-          curl -sS https://bootstrap.pypa.io/get-pip.py | python3.13.0
-          ln -sf /usr/local/bin/pip3 /usr/bin/pip3
-          pip3 install aqtinstall
           apt-get install -y tzdata build-essential git file wget yasm pkg-config cmake ninja-build imagemagick \
                                 libgl1-mesa-dev libxkbcommon-dev libxcb-cursor-dev libxcb-xinerama0 libxcb-xkb-dev \
                                 libxkbcommon-x11-dev libxcb1-dev libxcb-icccm4-dev libxcb-glx0-dev libxcb-image0-dev \
