@@ -898,8 +898,11 @@ def package_macos(app_dist_dir, app_target_name, script_dir, build_type):
 
         # 设置DMG文件名 - 确保不包含.app扩展名
         base_name = app_target_name.replace(".app", "")
-        dmg_name = f"{base_name}-{version}-{arch_name}.dmg"
-        dmg_path = Path(app_dist_dir).parent / dmg_name
+        dmg_name = f"{base_name}-v{version}-macos-{arch_name}.dmg"
+        # 确保pack/release目录存在
+        release_dir = Path(script_dir) / "pack" / "release"
+        release_dir.mkdir(parents=True, exist_ok=True)
+        dmg_path = release_dir / dmg_name
 
         # 创建临时目录用于构建DMG内容
         temp_dmg_dir = Path(app_dist_dir).parent / "temp_dmg"
