@@ -232,21 +232,6 @@ jobs:
         fi
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Upload Linux DEB to Release
-      if: github.event_name == 'release'
-      run: |
-        # Find the DEB file
-        deb_file=$(find pack/deb -name "*.deb" -type f | head -1)
-        if [ -n "$deb_file" ]; then
-          echo "Uploading $deb_file to release..."
-          gh release upload ${{ github.event.release.tag_name }} "$deb_file" --clobber
-        else
-          echo "No DEB file found!"
-          exit 1
-        fi
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-macos-arm64:
     runs-on: macos-latest
