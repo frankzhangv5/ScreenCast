@@ -398,34 +398,28 @@ void MainWindow::onStartMirrorClicked()
         QString deviceSerial = button->property("deviceSerial").toString();
         qDebug() << "Start mirroring clicked for device serial:" << deviceSerial;
 
-        // Find corresponding DeviceInfo struct by serial
-        bool deviceFound = false;
-        DeviceInfo deviceInfo;
-        for (const DeviceInfo& device : m_devices)
-        {
-            if (device.serial == deviceSerial)
-            {
-                deviceInfo = device;
-                deviceFound = true;
-                break;
-            }
-        }
+        if (deviceSerial.isEmpty())
+            return;
 
-        if (deviceFound)
+        DeviceInfo* deviceInfo = getDeviceInfo(deviceSerial);
+        if (deviceInfo)
         {
-            qDebug() << "Device found, creating mirror window for:" << deviceInfo.toString();
+            qDebug() << "Device found, creating mirror window for:" << deviceInfo->toString();
 
             // Create mirroring window
-            MirrorWindow* mirrorWindow = new MirrorWindow(deviceInfo);
+            MirrorWindow* mirrorWindow = new MirrorWindow(*deviceInfo);
             mirrorWindow->show();
             mirrorWindow->activateWindow();
 
-            // 连接关闭信号到删除槽
+            // 连接关闭信号到删除槽，确保窗口关闭时及时清理
             connect(mirrorWindow, &MirrorWindow::destroyed, mirrorWindow, &MirrorWindow::deleteLater);
         }
         else
         {
             qWarning() << "Device not found for serial:" << deviceSerial;
+            // 提示用户设备未连接
+            getStatusBar()->setStatusIcon(StatusType::Warning);
+            getStatusBar()->setNotification(tr("Device %1 not found").arg(deviceSerial));
         }
     }
 }
@@ -509,23 +503,11 @@ void MainWindow::renameDevice()
     if (deviceSerial.isEmpty())
         return;
 
-    // 查找对应的设备信息
-    DeviceInfo deviceInfo;
-    bool deviceFound = false;
-    for (const DeviceInfo& device : m_devices)
-    {
-        if (device.serial == deviceSerial)
-        {
-            deviceInfo = device;
-            deviceFound = true;
-            break;
-        }
-    }
-
-    if (!deviceFound)
+    DeviceInfo* deviceInfo = getDeviceInfo(deviceSerial);
+    if (!deviceInfo)
         return;
 
-    QString currentName = deviceInfo.name.isEmpty() ? tr("Unknown Device") : deviceInfo.name;
+    QString currentName = deviceInfo->name.isEmpty() ? tr("Unknown Device") : deviceInfo->name;
 
     bool ok;
     QString newName = QInputDialog::getText(

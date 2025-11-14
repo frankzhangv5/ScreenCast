@@ -471,6 +471,7 @@ void DeviceManager::processNewDevice(const DeviceInfo& dev)
         }
 
         cached->rotation = proxy->deviceRotation(dev.serial);
+        qDebug() << "processNewDevice:: Device rotation: " << cached->rotation;
 
         if (!proxy->setupMirrorServer(dev.serial, cached->forwardPort))
         {

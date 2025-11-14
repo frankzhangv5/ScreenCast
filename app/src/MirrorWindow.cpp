@@ -478,8 +478,6 @@ void MirrorWindow::handleFrameDecoded(const QImage& frame)
         // Get the available space in the mirror area (excluding title and status bars)
         QRect availableRect = m_mirrorLabel->geometry();
 
-        // 调整缩放策略：让图像宽度优先填满整个可用宽度，同时保持宽高比
-        // 这样可以避免两边出现黑色间隙
         QPixmap scaledPixmap = pixmap.scaled(availableRect.width(), // 优先匹配宽度
                                              availableRect.height(),
                                              Qt::KeepAspectRatio,
@@ -708,6 +706,8 @@ void MirrorWindow::updateWindowSizeBasedOnRotation()
     int displayWidth = m_deviceInfo.width;
     int displayHeight = m_deviceInfo.height;
 
+    qDebug() << "orignal resolution:" << displayWidth << "x" << displayHeight;
+
     if (m_currentRotation == 90 || m_currentRotation == 270)
     {
         // 旋转90或270度时，对调宽高
@@ -718,6 +718,7 @@ void MirrorWindow::updateWindowSizeBasedOnRotation()
     // 保存当前显示窗口的实际宽高
     m_actualDisplayWidth = displayWidth;
     m_actualDisplayHeight = displayHeight;
+    qDebug() << "actual display resolution:" << m_actualDisplayWidth << "x" << m_actualDisplayHeight;
 
     // 计算设备的原始宽高比
     float deviceAspectRatio = static_cast<float>(displayWidth) / displayHeight;
@@ -754,19 +755,26 @@ void MirrorWindow::updateWindowSizeBasedOnRotation()
         }
     }
 
+    if (getStatusBar() && getTitleBar())
+        windowHeight += getStatusBar()->height() + getTitleBar()->height();
+
+    qDebug() << "scaled window size:" << windowWidth << "x" << windowHeight;
+
     // 检查窗口状态，如果是最大化或最小化，先恢复正常状态
     if (windowState() & (Qt::WindowMaximized | Qt::WindowMinimized))
     {
         showNormal();
     }
 
-    if (getStatusBar() && getTitleBar())
-        windowHeight += getStatusBar()->height() + getTitleBar()->height();
-    // 使用resize方法更新窗口尺寸
-    resize(windowWidth, windowHeight);
+    setFixedSize(windowWidth, windowHeight);
 
-    // 刷新窗口内容
-    update();
+    if (layout())
+    {
+        layout()->invalidate();
+        layout()->update();
+    }
+
+    updateGeometry();
 
     qDebug() << "Window size updated based on rotation:" << m_currentRotation << "degrees. Window size:" << windowWidth
              << "x" << windowHeight << "with aspect ratio:" << deviceAspectRatio;
